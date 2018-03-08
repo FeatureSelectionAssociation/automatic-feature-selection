@@ -1,194 +1,217 @@
 __author__ = 'AlexLlamas'
 import numpy as np
 import math
+from typing import Dict
+
+
 # from minepy import MINE
 
 
 # -------------------------------------- Mutual information -----------------------------------------------------------
-def mutual_info(x, y, numBinx, numBiny):
-    N = x.size
-    H, xedges, yedges = np.histogram2d(x, y ,bins=[numBinx, numBiny])
-    H = np.array(H)
-    sumx = np.sum(H, axis=0)
-    sumy = np.sum(H, axis=1)
-    MI = 0.0
-    for i in range(0,numBinx):
-        for j in range(0, numBiny):
-            if H[i,j] != 0:
-                MI += (H[i,j]/float(N)) * \
-                      math.log10((H[i,j]/float(N))/((sumy[i]/float(N))*(sumx[j]/float(N))))
-    return MI
+def mutual_info(x, y, num_bin_x, num_bin_y):
+    n = x.size
+    h, x_edges, y_edges = np.histogram2d(x, y, bins=[num_bin_x, num_bin_y])
+    h = np.array(h)  # type: Dict[Tuple[int, int]]
+    sum_x = np.sum(h, axis=0)  # type: list
+    sum_y = np.sum(h, axis=1)  # type: list
+    mi = 0.0
+    for i in range(0, num_bin_x):
+        for j in range(0, num_bin_y):
+            if h[i, j] != 0:
+                mi += (h[i, j] /
+                       float(n)) * math.log10((h[i, j] / float(n)) / ((sum_y[i] / float(n)) * (sum_x[j] / float(n))))
+    return mi
+
+
 # ---------------------------------------------------------------------------------------------------------------------
 
 
-# --------------------------------------------- Entropy -------------------------------------------------------------
-def entropy(x, numBinx):
-    N = x.size
-    H, edges = np.histogram(x, numBinx)
+# --------------------------------------------- Entropy ---------------------------------------------------------------
+def entropy(x, num_bin_x):
+    n = x.size
+    h, edges = np.histogram(x, num_bin_x)  # type: list
     e = 0.0
-    for i in range(0,numBinx):
-        if H[i] != 0:
-            e -= (H[i]/float(N))*math.log10(H[i]/float(N))
+    for i in range(0, num_bin_x):
+        if h[i] != 0:
+            e -= (h[i] / float(n)) * math.log10(h[i] / float(n))
     return e
+
+
 # ---------------------------------------------------------------------------------------------------------------------
 
 
 # --------------------------------------- Normalized mutual information -----------------------------------------------
-def norm_MI(x, y, numBinx, numBiny):
-    MI = mutual_info(x, y, numBinx, numBiny)
-    ex = entropy(x, numBinx)
-    ey = entropy(y, numBiny)
-    R = MI/float(ex+ey)
-    Rmax = min(ex, ey)/float(ex+ey)
-    return R / Rmax
+def norm_mi(x, y, num_bin_x, num_bin_y):
+    mi = mutual_info(x, y, num_bin_x, num_bin_y)
+    ex = entropy(x, num_bin_x)
+    ey = entropy(y, num_bin_y)
+    r = mi / float(ex + ey)
+    r_max = min(ex, ey) / float(ex + ey)
+    return r / r_max
+
+
 # ---------------------------------------------------------------------------------------------------------------------
 
 
 # ---------------------------------------------- Pearson correlation --------------------------------------------------
 def pearson_corr(x, y):
-    N = x.size
+    """
+    x :type np.ndarray
+    y :type np.ndarray
+
+    :return rxy :type float
+    """
+    n = x.size
     xm = np.mean(x)
     ym = np.mean(y)
     numerator = 0.0
-    for i in range(0, N):
-        numerator += (x[i] - xm)*(y[i]-ym)
+    for i in range(0, n):
+        numerator += (x[i] - xm) * (y[i] - ym)
     sx = 0.0
-    for i in range(0, N):
-        sx += math.pow((x[i]-xm), 2)
+    for i in range(0, n):
+        exp = float(x[i] - xm)
+        sx += math.pow(exp, 2)
     sy = 0.0
-    for i in range(0,N):
-        sy += math.pow((y[i]-ym), 2)
-    rxy = numerator / math.sqrt(sx*sy)
+    for i in range(0, n):
+        exp = float(y[i] - ym)
+        sy += math.pow(exp, 2)
+    rxy = numerator / math.sqrt(sx * sy)
     return rxy
+
+
 # ---------------------------------------------------------------------------------------------------------------------
 
 
 # ------------------------------------------------ Entropy X|Y --------------------------------------------------------
-def entropyx_y(x, y, numBinx, numBiny):
-    N = x.size
-    H, xedges, yedges = np.histogram2d(x, y ,bins=[numBinx, numBiny])
-    H = np.array(H)
-    sumx = np.sum(H, axis=0)
+def entropy_x_y(x, y, num_bin_x, num_bin_y):
+    n = x.size
+    h, x_edges, y_edges = np.histogram2d(x, y, bins=[num_bin_x, num_bin_y])
+    h = np.array(h)  # type: Dict[Tuple[int, int]]
+    sum_x = np.sum(h, axis=0)  # type: list
     exy = 0.0
-    for i in range(0,numBinx):
-        for j in range(0, numBiny):
-            if H[i,j] != 0:
-                exy += (H[i,j]/float(N))*math.log10((sumx[j]/float(N))/(H[i,j]/float(N)))
+    for i in range(0, num_bin_x):
+        for j in range(0, num_bin_y):
+            if h[i, j] != 0:
+                exy += (h[i, j] / float(n)) * math.log10((sum_x[j] / float(n)) / (h[i, j] / float(n)))
     return exy
+
+
 # ---------------------------------------------------------------------------------------------------------------------
 
 
 # -------------------------------- Mutual information based on Entropy ------------------------------------------------
-def MI_Entropy(x, y, numBinx, numBiny):
-    MIE = entropy(x, numBinx) - entropyx_y(x, y, numBinx, numBiny)
-    return MIE
+def mi_entropy(x, y, num_bin_x, num_bin_y):
+    mie = entropy(x, num_bin_x) - entropy_x_y(x, y, num_bin_x, num_bin_y)
+    return mie
+
+
 # ---------------------------------------------------------------------------------------------------------------------
 
 
-# ---------------------------------- Propose dependency of Y over X ---------------------------------------------------
-def propuesta_Ixy(x, y, numBinx, numBiny):
-    H, xedges, yedges = np.histogram2d(x, y ,bins=[numBinx, numBiny])
-    H = np.array(H)
-    sumx = np.sum(H, axis=0)
-    norm = float(numBinx)/((numBinx-1)*2*numBiny)
-    Ixy = 0.0
-    for i in range(0,numBinx):
-        for j in range(0, numBiny):
-            if sumx[j] != 0:
-                Ixy += math.fabs((1/float(numBinx))-(H[i,j]/float(sumx[j])))
-    return norm*Ixy
+# ----------------------------------- Uniform Dependency --------------------------------------------------------------
+# -------------------- Information in Y of X : dependency of X over Y -------------------------------------------------
+def ud_ixy(x, y, num_bin_x, num_bin_y):
+    h, x_edges, y_edges = np.histogram2d(x, y, bins=[num_bin_x, num_bin_y])
+    h = np.array(h)  # type: Dict[Tuple[int, int]]
+    sum_x = np.sum(h, axis=0)  # type: list
+    norm = float(num_bin_x) / ((num_bin_x - 1) * 2 * num_bin_y)
+    ixy = 0.0
+    for i in range(0, num_bin_x):
+        for j in range(0, num_bin_y):
+            if sum_x[j] != 0:
+                ixy += math.fabs((1 / float(num_bin_x)) - (h[i, j] / float(sum_x[j])))
+    return norm * ixy
+
+
 # ---------------------------------------------------------------------------------------------------------------------
 
 
-# ---------------------------------- Propose dependency of X over Y ---------------------------------------------------
-def propuesta_Iyx(x, y, numBinx, numBiny):
-    H, xedges, yedges = np.histogram2d(x, y ,bins=[numBinx, numBiny])
-    H = np.array(H)
-    sumy = np.sum(H, axis=1)
-    norm = float(numBiny)/((numBiny-1)*2*numBinx)
-    Iyx = 0.0
-    for i in range(0,numBinx):
-        for j in range(0, numBiny):
-            if sumy[i] != 0:
-                Iyx += math.fabs((1/float(numBiny))-(H[i,j]/float(sumy[i])))
-    return norm*Iyx
+# --------------------------------------- Uniform mutual dependency ---------------------------------------------------
+def umd(x, y, num_bin_x, num_bin_y):
+    ixy = ud_ixy(x, y, num_bin_x, num_bin_y)
+    iyx = ud_ixy(y, x, num_bin_x, num_bin_y)
+    return (ixy + iyx) / 2
+
+
 # ---------------------------------------------------------------------------------------------------------------------
 
 
+# ------------------------------------------ Distance Covariance ------------------------------------------------------
+def d_cov(x, y):
+    n = x.size
 
+    # --- first for a  -----------------
+    a_kp = np.zeros(n)  # type: list
+    for k in range(0, n):
+        for l in range(0, n):
+            a_kp[k] += math.fabs(x[k] - x[l])
+        a_kp[k] *= (1 / float(n))
 
-# ------------------------------------------ Distance Covariance -----------------------------------------------------
-def d_cov(x,y):
-    N = x.size
-
-    a_kp = np.zeros(N)
-    for k in range(0,N):
-        for l in range(0,N):
-            a_kp[k] = a_kp[k] + math.fabs(x[k]-x[l])
-        a_kp[k] = (1/float(N))*a_kp[k]
-
-    a_pl = np.zeros(N)
-    for l in range(0,N):
-        for k in range(0,N):
-            a_pl[l]= a_pl[l] + math.fabs(x[k]-x[l])
-        a_pl[l]=a_pl[l]*(1/float(N))
+    a_pl = np.zeros(n)  # type: list
+    for l in range(0, n):
+        for k in range(0, n):
+            a_pl[l] += math.fabs(x[k] - x[l])
+        a_pl[l] *= 1 / float(n)
 
     a_pp = 0.0
-    for k in range(0,N):
-        for l in range(0,N):
-            a_pp += math.fabs(x[k]- x[l])
-    a_pp = a_pp * (1/math.pow(N,2))
+    for k in range(0, n):
+        for l in range(0, n):
+            a_pp += math.fabs(x[k] - x[l])
+    a_pp *= 1 / math.pow(n, 2)
 
-    A = np.zeros((N,N))
-    for k in range(0,N):
-        for l in range(0,N):
-            A[k, l] = math.fabs(x[k]-x[l]) - a_kp[k] - a_pl[l] + a_pp
+    a = np.zeros((n, n))  # type: Dict[Tuple[int, int]]
+    for k in range(0, n):
+        for l in range(0, n):
+            a[k, l] = math.fabs(x[k] - x[l]) - a_kp[k] - a_pl[l] + a_pp
 
-    # ------------------------------- now with b
+            # --- now with b  -----------------
+    b_kp = np.zeros(n)  # type: list
+    for k in range(0, n):
+        for l in range(0, n):
+            b_kp[k] += math.fabs(y[k] - y[l])
+        b_kp[k] *= (1 / float(n))
 
-    b_kp = np.zeros(N)
-    for k in range(0,N):
-        for l in range(0,N):
-            b_kp[k] = b_kp[k] + math.fabs(y[k]-y[l])
-        b_kp[k] = (1/float(N))*b_kp[k]
-
-    b_pl = np.zeros(N)
-    for l in range(0,N):
-        for k in range(0,N):
-            b_pl[l]= b_pl[l] + math.fabs(y[k]-y[l])
-        b_pl[l]=b_pl[l]*(1/float(N))
+    b_pl = np.zeros(n)  # type: list
+    for l in range(0, n):
+        for k in range(0, n):
+            b_pl[l] += math.fabs(y[k] - y[l])
+        b_pl[l] *= 1 / float(n)
 
     b_pp = 0.0
-    for k in range(0,N):
-        for l in range(0,N):
-            b_pp += math.fabs(y[k]- y[l])
-    b_pp = b_pp * (1/math.pow(N,2))
+    for k in range(0, n):
+        for l in range(0, n):
+            b_pp += math.fabs(y[k] - y[l])
+    b_pp *= 1 / math.pow(n, 2)
 
-    B = np.zeros((N,N))
-    for k in range(0,N):
-        for l in range(0,N):
-            B[k, l] = math.fabs(y[k]-y[l]) - b_kp[k] - b_pl[l] + b_pp
+    b = np.zeros((n, n))  # type: Dict[Tuple[int, int]]
+    for k in range(0, n):
+        for l in range(0, n):
+            b[k, l] = math.fabs(y[k] - y[l]) - b_kp[k] - b_pl[l] + b_pp
 
-    # Distance
-    V_xy = 0.0
-    for k in range(0,N):
-        for l in range(0,N):
-            V_xy += A[k,l]*B[k,l]
-    V_xy = V_xy*(1/math.pow(N,2))
+    # --- Distance  ---------------------
+    v_xy = 0.0
+    for k in range(0, n):
+        for l in range(0, n):
+            v_xy += a[k, l] * b[k, l]
+    v_xy *= 1 / math.pow(n, 2)
 
-    return V_xy
+    return v_xy
+
+
 # ---------------------------------------------------------------------------------------------------------------------
 
 
 # ----------------------------------------- Distance correlation ------------------------------------------------------
-def d_corr(x,y):
-    var_x = d_cov(x,x)
-    var_y = d_cov(y,y)
+def d_corr(x, y):
+    var_x = d_cov(x, x)
+    var_y = d_cov(y, y)
     cond = var_x * var_y
-    R_xy = 0.0
+    r_xy = 0.0
     if cond != 0:
-        R_xy = d_cov(x,y)/math.sqrt(cond)
-    return R_xy
+        r_xy = d_cov(x, y) / math.sqrt(cond)
+    return r_xy
+
+
 # ---------------------------------------------------------------------------------------------------------------------
 
 """
@@ -200,56 +223,31 @@ def MIC(x, y):
 # ---------------------------------------------------------------------------------------------------------------------
 """
 
+
+# ----------------------------------------- Comparative Dependency ----------------------------------------------------
 # ---------------------------- Propose 2 distance between p(X) and P(X|Y) ---------------------------------------------
-def propuesta2_Ixy(x, y, numBinx, numBiny):
-    N = x.size
-    H, xedges, yedges = np.histogram2d(x, y ,bins=[numBinx, numBiny])
-    H = np.array(H)
-    sumx = np.sum(H, axis=0)
-    sumy = np.sum(H, axis=1)
-    norm = float(numBinx)/((numBinx-1)*2*numBiny)
-    Ixy = 0.0
-    for i in range(0,numBinx):
-        for j in range(0, numBiny):
-            if sumx[j] != 0:
-                Ixy += math.fabs((sumy[i]/float(N))-(H[i,j]/float(sumx[j])))
-    return norm*Ixy
+def cd_ixy(x, y, num_bin_x, num_bin_y):
+    n = x.size
+    h, x_edges, y_edges = np.histogram2d(x, y, bins=[num_bin_x, num_bin_y])
+    h = np.array(h)  # type: Dict[Tuple[int, int]]
+    sum_x = np.sum(h, axis=0)  # type: list
+    sum_y = np.sum(h, axis=1)  # type: list
+    norm = float(num_bin_x) / ((num_bin_x - 1) * 2 * num_bin_y)
+    ixy = 0.0
+    for i in range(0, num_bin_x):
+        for j in range(0, num_bin_y):
+            if sum_x[j] != 0:
+                ixy += math.fabs((sum_y[i] / float(n)) - (h[i, j] / float(sum_x[j])))
+    return norm * ixy
+
+
 # ---------------------------------------------------------------------------------------------------------------------
 
 
-# ---------------------------- Propose 2 distance between p(Y) and P(Y|X) ---------------------------------------------
-def propuesta2_Iyx(x, y, numBinx, numBiny):
-    N = x.size
-    H, xedges, yedges = np.histogram2d(x, y ,bins=[numBinx, numBiny])
-    H = np.array(H)
-    sumx = np.sum(H, axis=0)
-    sumy = np.sum(H, axis=1)
-    norm = float(numBiny)/((numBiny-1)*2*numBinx)
-    Iyx = 0.0
-    for i in range(0,numBinx):
-        for j in range(0, numBiny):
-            if sumy[i] != 0:
-                Iyx += math.fabs((sumx[j]/float(N))-(H[i,j]/float(sumy[i])))
-    return norm*Iyx
+# ----------------------------------------- Comparative Mutual Dependency ---------------------------------------------
+def cmd(x, y, num_bin_x, num_bin_y):
+    ixy = cd_ixy(x, y, num_bin_x, num_bin_y)
+    iyx = cd_ixy(y, x, num_bin_x, num_bin_y)
+    return (ixy + iyx) / 2
+
 # ---------------------------------------------------------------------------------------------------------------------
-
-# --------------------------------------- Propose mutual dependency ---------------------------------------------------
-def propuesta_mutual_dependency(x, y, numBinx, numBiny):
-    Ixy = propuesta_Ixy(x, y, numBinx, numBiny)
-    Iyx = propuesta_Iyx(x, y, numBinx, numBiny)
-    #return Ixy
-    return Iyx
-    #return max(Ixy, Iyx)
-    #return (Ixy + Iyx)/2
-# ---------------------------------------------------------------------------------------------------------------------
-
-# ----------------------------------------- Propose mutual distance ---------------------------------------------------
-def propuesta2_mutual_dependency(x, y, numBinx, numBiny):
-    Ixy = propuesta2_Ixy(x, y, numBinx, numBiny)
-    Iyx = propuesta2_Iyx(x, y, numBinx, numBiny)
-    return Iyx
-    #return max(Ixy,Iyx)
-    #return (Ixy + Iyx)/2
-# ---------------------------------------------------------------------------------------------------------------------
-
-

@@ -41,8 +41,8 @@ def get_corrlab(numBinx,numBiny,filename, cols, labelcol):
 	for i in range(0,cols):
 		if(i!=labelcol):
 			x = np.array(data.ix[:,i])
-			PMD.append(round(propuesta_mutual_dependency(x, y, numBinx, numBiny),3))
-			PMD2.append(round(propuesta2_mutual_dependency(x, y, numBinx, numBiny),3))
+			PMD.append(round(umd(x, y, numBinx, numBiny),3))
+			PMD2.append(round(cmd(x, y, numBinx, numBiny),3))
 	return PMD, PMD2
 	
 xbinset = [2,3,4,5]
