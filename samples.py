@@ -6,6 +6,7 @@ from matplotlib import cm
 import matplotlib.pyplot as plt
 from CorrelationMesures import *
 from pandas import *
+import tkFileDialog
 
 
 class Samples:
@@ -65,16 +66,17 @@ class Samples:
 
     @staticmethod
     def scale(x_input):
-        x_scale = (x_input - np.min(x_input))/(np.max(x_input)-np.min(x_input))
+        x_scale = (x_input - np.min(x_input))/float(np.max(x_input)-np.min(x_input))
         return x_scale
 
-    @staticmethod
-    def get_file():
-        data = read_csv('Data\X-Y-Independent.txt', header=None, skiprows=[0])
+    def get_file(self, text=None):
+        file_path = tkFileDialog.askopenfilename()
+        data = read_csv(str(file_path))
         z = np.zeros((data.shape[0], 2))
-        # order X,W,Y,Z,T
-        z[:, 0] = np.array(data.ix[:, 0])
-        z[:, 1] = np.array(data.ix[:, 1])
+        if text is not None:
+            text.set("X= " + data.columns[0] + " Y= " + data.columns[1])
+        z[:, 0] = self.scale(np.array(data.ix[:, 0]))
+        z[:, 1] = self.scale(np.array(data.ix[:, 1]))
         return z
 
     def get_sin(self, num_samples, noise):
@@ -96,7 +98,7 @@ class Samples:
     def get_blur(self, num_samples, noise):
         mean = [0, 0]
         cov = [[noise, 0], [0, noise]]
-        x, y = np.random.multivariate_normal(mean, cov, num_samples).T
+        x, y = np.transpose(np.random.multivariate_normal(mean, cov, num_samples))
         z = np.zeros((num_samples, 2))
         z[:, 0] = self.scale(x)
         z[:, 1] = self.scale(y)
@@ -104,7 +106,7 @@ class Samples:
 
     def get_quadratic(self, num_samples, noise):
         x = np.array(np.linspace(-10, 10, num_samples))
-        y = np.random.normal(np.power(x, np.full(x.shape, 2)), noise)
+        y = np.random.normal(np.power(x, np.full(x.shape, 2, dtype=int)), noise)
         z = np.zeros((num_samples, 2))
         z[:, 0] = self.scale(x)
         z[:, 1] = self.scale(y)
@@ -145,7 +147,7 @@ class Samples:
     def get_x(self, num_samples, noise):
         x = np.array(np.linspace(-10, 10, num_samples/2))
         y1 = np.random.normal(x, noise)
-        y2 = np.random.normal((np.full(x.shape, 1) - x), noise)
+        y2 = np.random.normal((np.full(x.shape, 1, dtype=int) - x), noise)
         z = np.zeros((num_samples, 2))
         z[:, 0] = np.concatenate((x, x), axis=0)
         z[:, 1] = np.concatenate((y1, y2), axis=0)
@@ -155,8 +157,8 @@ class Samples:
 
     def get_circle(self, num_samples, noise):
         x = np.array(np.linspace(-4, 4, num_samples/2))
-        y1 = np.random.normal(np.sqrt(16-np.power(x, np.full(x.shape, 2))), noise)
-        y2 = -np.random.normal(np.sqrt(16-np.power(x, np.full(x.shape, 2))), noise)
+        y1 = np.random.normal(np.sqrt(16-np.power(x, np.full(x.shape, 2, dtype=int))), noise)
+        y2 = -np.random.normal(np.sqrt(16-np.power(x, np.full(x.shape, 2, dtype=int))), noise)
         z = np.zeros((num_samples, 2))
         z[:, 0] = np.concatenate((x, x), axis=0)
         z[:, 1] = np.concatenate((y1, y2), axis=0)
@@ -166,8 +168,8 @@ class Samples:
 
     def get_curve_x(self, num_samples, noise):
         x = np.array(np.linspace(-10, 10, num_samples/2))
-        y1 = np.random.normal(np.power(x, np.full(x.shape, 2)), noise)
-        y2 = -np.random.normal(np.power(x, np.full(x.shape, 2)), noise)
+        y1 = np.random.normal(np.power(x, np.full(x.shape, 2, dtype=int)), noise)
+        y2 = -np.random.normal(np.power(x, np.full(x.shape, 2, dtype=int)), noise)
         z = np.zeros((num_samples, 2))
         z[:, 0] = np.concatenate((x, x), axis=0)
         z[:, 1] = np.concatenate((y1, y2), axis=0)
@@ -177,7 +179,7 @@ class Samples:
 
     def get_diagonal_line2(self, num_samples, noise):
         x = np.array(np.linspace(-10, 10, num_samples))
-        y = np.random.normal((np.full(x.shape, 1)-x), noise)
+        y = np.random.normal((np.full(x.shape, 1, dtype=int)-x), noise)
         z = np.zeros((num_samples, 2))
         z[:, 0] = self.scale(x)
         z[:, 1] = self.scale(y)
@@ -322,12 +324,12 @@ class Samples:
         x, y = samples[:, 0], samples[:, 1]
 
         fig = plt.figure(1)
-        gs = gridspec.GridSpec(4,4)
+        gs = gridspec.GridSpec(4, 4)
         ax1 = fig.add_subplot(gs[:3, :3])
         ax1.scatter(x, y, color='blue')
         ax1.set_xlabel('X axis')
         ax1.set_ylabel('Y axis')
-        ax2 = fig.add_subplot(gs[3,:3])
+        ax2 = fig.add_subplot(gs[3, :3])
         ax2.hist(x, bins=np.linspace(np.amin(x), np.amax(x), num_bin_x), facecolor='g')
         ax2.set_xticklabels([])
         ax2.yaxis.set_visible(False)

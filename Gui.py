@@ -22,8 +22,8 @@ def set_list_box(in_list, listbox):
 
 def case_function(samples, obj):
     sam = Samples()  # object required to plot
-    num_bin_x, num_bin_y = (Bin_x.get(), Bin_y.get())
-    mi_text.set('Calculating...')
+    num_bin_x, num_bin_y = (bin_x.get(), bin_y.get())
+    mi_text.set(mi_text.get() + '\nCalculating...')
     not_selected = True
     if plot_sample.get():
         sam.plot_sample(samples, num_bin_x, num_bin_y)
@@ -106,12 +106,8 @@ def samples_grid(num_bin_x, num_bin_y):
         sam_per_block = (v*sig)/math.sqrt(1-math.pow(sig, 2))
         num_samples = int(num_bin_x*num_bin_y*sam_per_block)
         mi_text.set('The number of samples needed for a significance of '
-                    + str(sig) + '\nwith v= ' + str(v) + ' ,Bin_x= ' + str(num_bin_x)
-                    + ' ,Bin_y= ' + str(num_bin_y) + ' ,is...: ' + str(num_samples))
-
-        print 'The number of samples needed for a significance of ' \
-              + str(sig) + 'with v = ' + str(v) + 'Bin_x = ' + str(num_bin_x) \
-              + 'Bin_y= ' + str(num_bin_y) + 'is...: ' + str(num_samples)
+                    + str(sig) + '\nwith v= ' + str(v) + ' ,bin_x= ' + str(num_bin_x)
+                    + ' ,bin_y= ' + str(num_bin_y) + ' ,is...: ' + str(num_samples))
 
 
 def bin_selection_validation(sigma, obj):
@@ -312,7 +308,7 @@ def plot_select():
             case_function(samples, sam)
         elif ind[0] == 14:
             sam = Samples(type_var=14)
-            samples = sam.get_file()
+            samples = sam.get_file(mi_text)
             case_function(samples, sam)
         else:
             mi_text.set('Error')
@@ -372,12 +368,14 @@ def frame10_help():
 
 def frame11_help():
     mi_text.set('Calculate samples for the grid \n '
+                'Used to calculate the number of samples\n'
+                'needed for the selected bins and significance.\n'
                 'Noise: is not used \n '
                 'Number of samples: is not used \n '
                 'Num_bins X: sets the bins in X \n'
                 'Num_bins Y: sets the bins in Y \n'
                 'Step: is not used \n'
-                'Significance: set the significance to calculate the number of samples needed for the selected bins.')
+                'Significance: set the significance')
 
 
 def frame12_help():
@@ -412,7 +410,8 @@ list1 = Listbox(frame0)
 list1.pack()
 set_scrollbar(list1, scroll1)
 name_list = ['Sinusoidal', 'Uniform', 'Blur', 'Quadratic', 'Diagonal line 1', 'Horizontal line', 'Vertical line',
-             'X line', 'Circle', 'X curve', 'Diagonal line 2', 'Dependent', 'Independent', 'Correlated', 'File']
+             'X line', 'Circle', 'X curve', 'Diagonal line 2', 'Dependent', 'Independent', 'Correlated',
+             'File |not for steps plots']
 set_list_box(name_list, list1)
 # ------------------------------------------
 
@@ -441,15 +440,15 @@ e2 = Entry(frame2, textvar=number_sam).pack(side=LEFT)
 frame3 = Frame(v0)
 frame3.pack(fill=X)
 l3 = Label(frame3, text='Num_bins X: ', width=20, anchor=E).pack(side=LEFT)
-Bin_x = IntVar(value=40)
-e3 = Entry(frame3, textvar=Bin_x).pack(side=LEFT)
+bin_x = IntVar(value=40)
+e3 = Entry(frame3, textvar=bin_x).pack(side=LEFT)
 
 # Number of bins in Y -------------
 frame4 = Frame(v0)
 frame4.pack(fill=X)
 l4 = Label(frame4, text='Num_bins Y: ', width=20, anchor=E).pack(side=LEFT)
-Bin_y = IntVar(value=40)
-e4 = Entry(frame4, textvar=Bin_y).pack(side=LEFT)
+bin_y = IntVar(value=40)
+e4 = Entry(frame4, textvar=bin_y).pack(side=LEFT)
 
 # Step variable ----------------
 frame5 = Frame(v0)
