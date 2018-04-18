@@ -35,7 +35,7 @@ def binsStepBased(data, v=2, sigma=0.95):
 		step = int(math.floor(1 / float(math.sqrt((v*sigma)/(n*math.sqrt(1-sigma))))))
 		numbinX = int(math.floor(domainSizeX/step))
 		stepSplit = int(round(pow(numbinX,0.5),0))
-		print domainSizeX, numbinX, stepSplit
+		#print domainSizeX, numbinX, stepSplit
 		xbinset = ut.splitSize(numbinX,stepSplit)
 		xbinset = xbinset[1:] #remove first element always 0
 		xbinsetList.append(xbinset)	

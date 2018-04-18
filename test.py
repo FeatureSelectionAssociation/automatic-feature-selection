@@ -18,18 +18,25 @@ def artificialTest():
 		data = read_csv(filename)
 		X = np.array(data.ix[:,0:-1])
 		y = np.array(data.ix[:,-1])
-		print X.shape
-		print y.shape
+		#print X.shape
+		#print y.shape
+
+		#Static search
+		#print bc.binsStepBased(data)
 
 		### Search
 		#Dynamic search
-		#bx = bd.binarySearchBins(X,y,1,5)
+		#X, y, method, split, useSteps, normalizeData, Debug
+		bx = bd.binarySearchBins(X,y,1,0,0)
+		bx = bd.binarySearchBins(X,y,1,0,1)
+		bx = bd.binarySearchBins(X,y,1,0,2)
+		bx = bd.binarySearchBins(X,y,1,0,3)
+		bx = bd.binarySearchBins(X,y,1,0,4)
+		bx = bd.binarySearchBins(X,y,1,0,5)
 		#print bx
 		#bx = bd.cuadratureSearchBins(X)	
 		#print bx
-		#Static search
-		print bc.binsStepBased(data)
-
+		
 		### Cuts
 		#[X,y] = cuts.greatestDiff(rank,weight,data)
 		#[X,y] = cuts.monotonicValidationCut(rank,weight,data)
