@@ -20,9 +20,13 @@ def splitSize(size,split, zero=True):
 	binsSize = float(size)/split
 	for i in range(0,split):
 		bins[i] = int(round(binsSize*(i)))
+		if(bins[i]==1):
+			bins[i]=2
 	bins.append(size)
 	if(zero==False):
 		bins.remove(0)
+	bins = list(set(bins))
+	bins.sort()
 	return bins
 
 def intervalSplit(infLim,supLim,split=2,limitIncluded=False):
@@ -53,3 +57,8 @@ def maxPosition(l):
 			maxVal = l[i]
 			position = i
 	return position
+
+def normalize(arr):
+	maxValue = max(arr)
+	arr[:] = [round(x / maxValue,2) for x in arr]
+	return arr

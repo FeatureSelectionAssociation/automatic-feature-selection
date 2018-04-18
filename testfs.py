@@ -9,7 +9,7 @@ def artificialTest():
 	xbinset = [2, 4, 7, 10, 15, 20, 30, 40, 50, 75, 100] #features
 	ybinset = [2] #label
 	files = ['data-f1.csv', 'data-f2.csv','data-f3.csv','data-f4.csv','colon-cancer.csv']
-	buenos = [[1,2,3,4,5,6],[0,1],[0,1],[0,1,3,2],['u']]
+	buenos = [[0,1,2,3,4,5,6],[0,1],[0,1],[0,1,3,2],['u']]
 	#files = ['data-f1.csv']
 	i = 0
 	verboseClassifiers = True

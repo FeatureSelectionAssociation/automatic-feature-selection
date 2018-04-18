@@ -20,13 +20,16 @@ def computeStepNormalized(N, v=2, sigma=0.95): #useSteps = 2
 	return int(math.floor(1 / float(math.sqrt((v*sigma)/(N*math.sqrt(1-sigma))))))
 
 def computeStepV2(rangeData, N, v=2, sigma=0.95): #useSteps = 2
-	num = rangeData*v*sigma
-	den = N*pow((1-sigma),0.5)
-	step = pow(num/den,0.5)
-	result = int(math.floor(rangeData / step))
+	if(rangeData>(pow(N,0.5)/2)):
+		num = rangeData*v*sigma
+		den = N*pow((1-sigma),0.5)
+		step = pow(num/den,0.5)
+		result = int(math.floor(rangeData / step))
+	else:
+		result = rangeData
 	return result
 
-def binarySearchBins(X, y, method=1, split=0, useSteps=0, debug=False):
+def binarySearchBins(X, y, method=0, split=0, useSteps=0, normalizeResult=True, debug=False):
 	xbinsetList = []
 	xValueList = []
 	rangeY = float(len(set(y)))
@@ -75,7 +78,7 @@ def binarySearchBins(X, y, method=1, split=0, useSteps=0, debug=False):
 				print "currentBins: ", currentBins
 			dependencyValues = []
 			for numbinx in currentBins: #Compute dependency with each bin proposed
-				if(method==1):
+				if(method==0):
 					dependencyValues.append(round(cm.umd(xi,y,int(numbinx),int(numbiny)),2))
 				else:
 					dependencyValues.append(round(cm.cmd(xi,y,int(numbinx),int(numbiny)),2))
@@ -98,32 +101,43 @@ def binarySearchBins(X, y, method=1, split=0, useSteps=0, debug=False):
 			bbi = explored.index(bestBin) #best bin index
 			if(debug):
 				print "bbi: ", bbi
-			if(bbi>=1):
-				li = round((explored[bbi]+explored[bbi-1])/2)
-			else:
-				if(debug):
-					print "inferior limit"
-				#print explored, bbi
-				li = round(((explored[bbi+1]+explored[bbi])/2 + 2)/2)
-			if(bbi+1<len(explored)):
-				ls = round((explored[bbi+1]+explored[bbi])/2)
-			else:
-				if(debug):
-					print "superior limit"
-				ls = round((li+explored[bbi])/2)
-			currentBins = [li, ls]
+			
+			#Calculating next inferior and superior limit
+			if(len(currentBins)>2):
+				if(bbi>=1):
+					li = round((explored[bbi]+explored[bbi-1])/2)
+				else:
+					if(debug):
+						print "inferior limit"
+					li = round(((explored[bbi+1]+explored[bbi])/2 + 2)/2)
+					
+				if(bbi+1<len(explored)):
+					ls = round((explored[bbi+1]+explored[bbi])/2)
+				else:
+					if(debug):
+						print "superior limit"
+					ls = round((li+explored[bbi])/2)
+				
+				currentBins = [li, ls]
+			
 			if(debug):
-				print "******"
+				print "***********"
+
 		if(debug):
 			print "maxValue: ", maxValue
 			print "bestBin: ", bestBin
 		xbinsetList.append(int(bestBin))
 		xValueList.append(round(maxValue,2))
-	print "================================================================"
-	print xbinsetList
+	#print "================================================================"
+	#print xbinsetList
+	#print xValueList
+	if(normalizeResult):
+		xValueList = ut.normalize(xValueList)
 	print xValueList
 	#optimalRelevancyBins(X,y,method)
-	return xbinsetList
+	#return xbinsetList
+	return xValueList
+
 
 def cuadratureSearchBins(X, method=1, split=3, xjlist=False, consecutiveDepth=3, maxDepth=7, computeRepeated=False, Debug=False):
 	xbinsetList = {}
