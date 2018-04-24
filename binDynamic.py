@@ -29,7 +29,7 @@ def computeStepV2(rangeData, N, v=2, sigma=0.95): #useSteps = 2
 		result = rangeData
 	return result
 
-def binarySearchBins(X, y, method=0, split=0, useSteps=0, normalizeResult=True, debug=False):
+def binarySearchBins(X, y, method=0, split=0, useSteps=0, normalizeResult=False, debug=False):
 	xbinsetList = []
 	xValueList = []
 	rangeY = float(len(set(y)))
@@ -135,8 +135,8 @@ def binarySearchBins(X, y, method=0, split=0, useSteps=0, normalizeResult=True, 
 		xValueList = ut.normalize(xValueList)
 	print xValueList
 	#optimalRelevancyBins(X,y,method)
-	#return xbinsetList
-	return xValueList
+	return xbinsetList
+	#return xValueList
 
 
 def cuadratureSearchBins(X, method=1, split=3, xjlist=False, consecutiveDepth=3, maxDepth=7, computeRepeated=False, Debug=False):
