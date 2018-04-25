@@ -238,3 +238,5 @@ def mergeResults(dict1, dict2, f1=2.5, f2=2.5):
 #[X,y,headers] = readNumpy("datasets/trainningSet12.csv",'label')
 #print X[0]
 #print y
+
+transposeDataFile('f1.csv','data-f1.csv')

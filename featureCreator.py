@@ -239,16 +239,16 @@ def feature4(numberOfRecords,verbose=0):#targetNoiseCorrelation
 		print sum(target)
 	return [features,target]
 #'''
-f1,t1 = feature1(1000,1)
+f1,t1 = feature1(2000,1)
 l1 = ['target','time','cos','0to40','x','y','z','val','noise1','noise2','noise3','noise4','timex10','time+noise','logic','restrictions']
 writeCSV("f1.csv",f1,t1,l1)
-f2,t2 = feature2(1000,1)
+f2,t2 = feature2(2000,1)
 l2 = ['target','v1','v2','n1','n2','n3','n4','n5','n6','v1-v2+noiseU','v1-v2+noiseG','v1-v2']
 writeCSV("f2.csv",f2,t2,l2)
-f3,t3 = feature3(1000,1)
+f3,t3 = feature3(2000,1)
 l3 = ['target','var0','var1','noise1','noise1*10','noise2','noise3','var0>var1+noise1','insidecircle']
 writeCSV("f3.csv",f3,t3,l3)
-f4,t4 = feature4(1000,1)
+f4,t4 = feature4(2000,1)
 l4 = ['target','target+sNoiseU','target+mNoiseU','target+bNoiseG','target+mNoiseG','noiseU1','noiseG1',]
 writeCSV("f4.csv",f4,t4,l4)
 #'''

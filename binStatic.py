@@ -32,7 +32,7 @@ def binStatic(data, method=1):
 		binSetList.append(binSet)
 	#return computeValue(data,binSetList)
 	result =  computeValue(data,binSetList, method)[0]
-	print result
+	#print result
 	return result
 
 def computeValue(data, binSetList, method):
@@ -50,8 +50,10 @@ def computeValue(data, binSetList, method):
 					binValue = round(cm.umdv(xi,y,int(numbinx),int(numbiny)),2)
 				elif(method==1):
 					binValue = round(cm.cmdv(xi,y,int(numbinx),int(numbiny)),2)
-				else:
+				elif(method==2):
 					binValue = round(cm.ucmdv(xi,y,int(numbinx),int(numbiny)),2)
+				elif(method==3):
+					binValue = round(cm.MIC(xi,y),2)
 				if(binValue>maxValue):
 					maxValue=binValue
 					binResult = [numbinx,numbiny]

@@ -1,4 +1,4 @@
-import common as cm
+#import common as cm
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
@@ -15,7 +15,7 @@ from sklearn.linear_model import Perceptron
 
 
 names = [
-		"Perceptron",
+		#"Perceptron",
 		# "XGBreglinear",
 		# "XGBreglogistic",
 		"NearestNeighbors",
@@ -30,7 +30,7 @@ names = [
 		]
 
 classifiers = [
-		Perceptron(),
+		#Perceptron(),
 		# xgb.XGBClassifier(objective='reg:linear'),
 		# xgb.XGBClassifier(objective='reg:logistic'),
 		KNeighborsClassifier(10),
@@ -50,7 +50,10 @@ def getBestClassifiers(X,y,testPerc=0.4):
 	global classifiers
 	global names
 	X_train, X_test, y_train, y_test  = train_test_split(X, y, test_size=testPerc, random_state=43)
+	fscore = 0
 	for name, clf in zip(names, classifiers):
 		clf.fit(X_train, y_train)
 		score = clf.score(X_test, y_test)
-		print (name, round(score,2))
+		fscore += score
+		#print (name, round(score,2))
+	return round(fscore/len(classifiers),2)
