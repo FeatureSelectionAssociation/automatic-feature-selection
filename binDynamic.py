@@ -1,33 +1,6 @@
-import numpy as np
 import CorrelationMesures as cm
 import util as ut
-import math
-
-#Dynamic vs Static (Relevancy and classification)
-def computeStep(rangeX, rangeY, N, v=2, sigma=0.95): #useSteps = 0
-	num = rangeX*rangeY*v*sigma
-	den = N*pow((1-sigma),0.5)
-	step = pow(num/den,0.5)
-	resultX = int(math.floor(rangeX / step))
-	resultY = int(math.floor(rangeY / step))
-	if(resultX<=2):
-		resultX=2
-	if(resultY<=2):
-		resultY=2
-	return [resultX,resultY]
-
-def computeStepNormalized(N, v=2, sigma=0.95): #useSteps = 2
-	return int(math.floor(1 / float(math.sqrt((v*sigma)/(N*math.sqrt(1-sigma))))))
-
-def computeStepV2(rangeData, N, v=2, sigma=0.95): #useSteps = 2
-	if(rangeData>(pow(N,0.5)/2)):
-		num = rangeData*v*sigma
-		den = N*pow((1-sigma),0.5)
-		step = pow(num/den,0.5)
-		result = int(math.floor(rangeData / step))
-	else:
-		result = rangeData
-	return result
+import step as st
 
 def binarySearchBins(X, y, method=0, split=0, useSteps=0, normalizeResult=False, debug=False):
 	xbinsetList = []
@@ -45,27 +18,26 @@ def binarySearchBins(X, y, method=0, split=0, useSteps=0, normalizeResult=False,
 		rangeX = float(len(set(xi)))
 		#defining range of bins
 		if(useSteps==0):
-			step = computeStep(rangeX,rangeY,y.shape[0])
+			step = st.computeStep(rangeX,rangeY,y.shape[0])
 			domainx = step[0]
 			numbiny = step[1]
 		elif(useSteps==1):
-			domainx = computeStepNormalized(y.shape[0])
+			domainx = st.computeStepNormalized(y.shape[0])
 			numbiny = domainx
 		elif(useSteps==2):
-			domainx = computeStepV2(rangeX,y.shape[0])
-			numbiny = computeStepV2(rangeY,y.shape[0])	
+			domainx = st.computeStepV2(rangeX,y.shape[0])
+			numbiny = st.computeStepV2(rangeY,y.shape[0])	
 		elif(useSteps==3):
-			domainx = computeStepV2(rangeX,y.shape[0])
+			domainx = st.computeStepV2(rangeX,y.shape[0])
 			numbiny = rangeY
 		elif(useSteps==4):
 			domainx = rangeX
-			numbiny = computeStepV2(rangeY,y.shape[0])	
+			numbiny = st.computeStepV2(rangeY,y.shape[0])	
 		else:
 			domainx = rangeX
 			numbiny = rangeY	
-		#domainx = int(pow(domainx,1.0))
 		
-		#Step 1: Initial Split
+		########### Step 1: Initial Split ###########
 		if(split==0):
 			currentBins = ut.splitSize(domainx,pow(domainx,0.5),False)
 		else:
@@ -73,15 +45,17 @@ def binarySearchBins(X, y, method=0, split=0, useSteps=0, normalizeResult=False,
 		if(debug):
 			print currentBins, split
 		while(not(repeated)): #Explore bins
-			#Step 2: Check greater
+			########### Step 2: Check greater ###########
 			if(debug):
 				print "currentBins: ", currentBins
 			dependencyValues = []
 			for numbinx in currentBins: #Compute dependency with each bin proposed
 				if(method==0):
-					dependencyValues.append(round(cm.umd(xi,y,int(numbinx),int(numbiny)),2))
-				else:
-					dependencyValues.append(round(cm.cmd(xi,y,int(numbinx),int(numbiny)),2))
+					dependencyValues.append(round(cm.umdv(xi,y,int(numbinx),int(numbiny)),2))
+				elif(method==1):
+					dependencyValues.append(round(cm.cmdv(xi,y,int(numbinx),int(numbiny)),2))
+				elif(method==2):
+					dependencyValues.append(round(cm.ucmdv(xi,y,int(numbinx),int(numbiny)),2))
 				if(numbinx in explored):
 					repeated = True
 				else:
@@ -91,7 +65,7 @@ def binarySearchBins(X, y, method=0, split=0, useSteps=0, normalizeResult=False,
 			if(currentMaxValue>maxValue):
 				maxValue = currentMaxValue
 				bestBin = currentBins[currentMaxPosition]
-			#Step 3: Get next bins
+			########### Step 3: Get next bins ###########
 			explored.sort()
 			if(debug):
 				print "values: ", dependencyValues
@@ -128,15 +102,12 @@ def binarySearchBins(X, y, method=0, split=0, useSteps=0, normalizeResult=False,
 			print "bestBin: ", bestBin
 		xbinsetList.append(int(bestBin))
 		xValueList.append(round(maxValue,2))
-	#print "================================================================"
-	#print xbinsetList
-	#print xValueList
 	if(normalizeResult):
 		xValueList = ut.normalize(xValueList)
-	print xValueList
 	#optimalRelevancyBins(X,y,method)
-	return xbinsetList
-	#return xValueList
+	#return [xValueList, xbinsetList]
+	print xValueList
+	return xValueList
 
 
 def cuadratureSearchBins(X, method=1, split=3, xjlist=False, consecutiveDepth=3, maxDepth=7, computeRepeated=False, Debug=False):
@@ -262,14 +233,11 @@ def cuadratureSearchBins(X, method=1, split=3, xjlist=False, consecutiveDepth=3,
 def optimalRelevancyBins(X,y,method=1):
 	xbinsetList = []
 	xValueList = []
-	#X = np.array(data.ix[:,0:-1])
-	#y = np.array(data.ix[:,-1])
 	numbiny = float(len(set(y)))
 	featureN = 1
 	for i in range(0,X.shape[1]): #For each feature
 		bestBin = 0
 		maxValue = 0
-		#x = np.array(data.ix[:,i])
 		x = X[:,i]
 		domainx = int(len(set(x)))
 		domainx = int(pow(domainx,1.0))

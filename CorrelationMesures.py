@@ -250,4 +250,28 @@ def cmd(x, y, num_bin_x, num_bin_y):
     iyx = cd_ixy(y, x, num_bin_x, num_bin_y)
     return (ixy + iyx) / 2
 
-# ---------------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------ FS Dependencies ---------------------------------------------------
+
+def umdv(x, y, num_bin_x, num_bin_y):
+    #ixy = ud_ixy(x, y, num_bin_x, num_bin_y)
+    iyx = ud_ixy(y, x, num_bin_y, num_bin_x)
+    #return (ixy+iyx)/2
+    #return ixy
+    return iyx
+
+def cmdv(x, y, num_bin_x, num_bin_y):
+    #ixy = cd_ixy(x, y, num_bin_x, num_bin_y)
+    iyx = cd_ixy(y, x, num_bin_y, num_bin_x)
+    #return (ixy+iyx)/2
+    #return ixy
+    return iyx
+
+def ucmdv(x, y, num_bin_x, num_bin_y):
+    #ixy1 = ud_ixy(x, y, num_bin_x, num_bin_y)
+    #ixy2 = cd_ixy(x, y, num_bin_x, num_bin_y)
+    iyx1 = ud_ixy(y, x, num_bin_y, num_bin_x)
+    iyx2 = cd_ixy(y, x, num_bin_y, num_bin_x)
+    #return (ixy1+ixy2+iyx1+iyx2)/4
+    #return (ixy1 + ixy2) / 2
+    return (iyx1 + iyx2) / 2
+        
