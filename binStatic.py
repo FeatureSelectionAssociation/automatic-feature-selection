@@ -1,5 +1,4 @@
 import numpy as np
-import util as ut
 import math
 import step as st
 import CorrelationMesures as cm
@@ -30,9 +29,7 @@ def binStatic(data, method=1):
 		binSet = set(binSet)
 		binSet = list(binSet)
 		binSetList.append(binSet)
-	#return computeValue(data,binSetList)
 	result =  computeValue(data,binSetList, method)[0]
-	#print result
 	return result
 
 def computeValue(data, binSetList, method):
@@ -59,5 +56,4 @@ def computeValue(data, binSetList, method):
 					binResult = [numbinx,numbiny]
 		binValueResult.append(maxValue)
 		binSetResult.append(binResult)
-		#print binSetResult
 	return [binValueResult, binSetResult]

@@ -1,12 +1,6 @@
 import numpy as np
 import classifiers as cf
 
-def getOrderRank(xlist):
-	rank = [i[0] for i in sorted(enumerate(xlist), key=lambda x:x[1])]
-	rank.reverse()
-	#print rank
-	return rank
-
 def greatestDiff(lst):
 	maxdiff=0
 	cutpos=0

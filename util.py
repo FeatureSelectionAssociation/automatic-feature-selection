@@ -7,12 +7,7 @@ def maxlist(a,b):
 def getOrderRank(xlist):
 	rank = [i[0] for i in sorted(enumerate(xlist), key=lambda x:x[1])]
 	rank.reverse()
-	#print rank
 	return rank
-
-def printresult(PMDbest,PMD2best,labelcol):
-	for i in range(0,len(PMDbest)):
-		print i,labelcol,":",PMDbest[i],PMD2best[i]
 
 def splitSize(size,split, zero=True):
 	split = int(split)
