@@ -129,7 +129,7 @@ def ud_ixy(x, y, num_bin_x, num_bin_y):
 # --------------------------------------- Uniform mutual dependency ---------------------------------------------------
 def umd(x, y, num_bin_x, num_bin_y):
     ixy = ud_ixy(x, y, num_bin_x, num_bin_y)
-    iyx = ud_ixy(y, x, num_bin_x, num_bin_y)
+    iyx = ud_ixy(y, x, num_bin_y, num_bin_x)
     return (ixy + iyx) / 2
 
 
@@ -247,7 +247,6 @@ def cd_ixy(x, y, num_bin_x, num_bin_y):
 # ----------------------------------------- Comparative Mutual Dependency ---------------------------------------------
 def cmd(x, y, num_bin_x, num_bin_y):
     ixy = cd_ixy(x, y, num_bin_x, num_bin_y)
-    iyx = cd_ixy(y, x, num_bin_x, num_bin_y)
+    iyx = cd_ixy(y, x, num_bin_y, num_bin_x)
     return (ixy + iyx) / 2
-
 # ---------------------------------------------------------------------------------------------------------------------
