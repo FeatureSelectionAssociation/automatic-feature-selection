@@ -7,11 +7,13 @@ import classifiers as cf
 def artificialTest():
 	#files = ['data-f1.csv','data-f2.csv','data-f3.csv','data-f4.csv','simpleCorrelations.csv','data-r50.csv','data2400-r20.csv']
 	#buenos = [[0,1,2,3,4,5,6],[0,1],[0,1],[0,1,3,2],[0,1,2,3,4,5],[0,1,2],[0,1,2]]
-	files = ['data-f1.csv', 'data-f2.csv','data-f3.csv','data-f4.csv','data-r50.csv','data2400-r20.csv']
-	buenos = [[0,1,2,3,4,5,6],[0,1],[0,1],[0,1,3,2],[0,1,2],[0,1,2]]
+	#files = ['data-f1.csv', 'data-f2.csv','data-f3.csv','data-f4.csv','data-r50.csv','data2400-r20.csv']
+	#buenos = [[0,1,2,3,4,5,6],[0,1],[0,1],[0,1,3,2],[0,1,2],[0,1,2]]
 	#files = ['colon-cancer.csv']
 	#buenos = [[0,1,2,3,4,5,6]]
-	
+	files = ['data-f4.csv']
+	buenos = [[0,1,2,3,4,5,6]]
+		
 
 	i=0
 	verboseClassifiers = True
@@ -27,9 +29,9 @@ def artificialTest():
 		########### Search ###########
 		#Static search
 		ss = []
-		ss.append(bs.binStatic(data,0))
-		ss.append(bs.binStatic(data,1))
-		#ss.append(bs.binStatic(data,2))
+		ss.append(bs.binStatic(X,y,0))
+		#ss.append(bs.binStatic(data,1))
+		ss.append(bs.binStatic(X,y,0))
 		#ss.append(bs.binStatic(data,3))
 		weight = (bs.sumMixedCorrelation(ss))
 		#print "static:",weight
@@ -46,7 +48,9 @@ def artificialTest():
 		#print bx
 		
 		########### Cuts ###########
+		#'''
 		rank = ut.getOrderRank(weight)
+		print rank
 
 		print cf.getBestClassifiers(X,y)
 		[X,y,cutpos] = cuts.greatestDiff(rank,weight,data)
@@ -56,5 +60,5 @@ def artificialTest():
 		
 		i = i+1
 		print "-------------------------------------\n"
-
+		#'''
 artificialTest()
