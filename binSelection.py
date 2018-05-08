@@ -1,6 +1,66 @@
 import CorrelationMesures as cm
 import util as ut
-import step as st
+import numpy as np
+import math
+
+
+#################################### STATIC (FORMULA) BIN SELECTION ####################################
+def binStatic(data, method=1):
+	binSetList = []
+	binSetListResult = []
+	binValueResult = []
+	for i in range(0,data.shape[1]):
+		binSet = []
+		f = np.array(data.ix[:,i])
+		N = len(f)
+		domainSize = float(len(set(f)))
+		std = np.std(f)
+		binSet.append(ut.computeStepV2(domainSize, N))
+		binSet.append(round(pow(domainSize,0.5))) #Square Root
+		binSet.append(round(np.log2(domainSize))) #Strugles
+		binSet.append(round(2*pow(domainSize,0.3333))) #Rice
+		binSet.append(round((3.5*std)/pow(domainSize,0.3333))) #Scott normal
+		for i in range(0,len(binSet)):
+			if(domainSize<(pow(N,0.5)/2)):
+				binSet[i] = domainSize
+			if(binSet[i] < 2):
+				binSet[i] = 2
+			if(binSet[i] > binSet[0]):
+				binSet[i] = binSet[0]
+		binSet = map(int,binSet)
+		binSet = set(binSet)
+		binSet = list(binSet)
+		binSetList.append(binSet)
+	result =  computeValue(data,binSetList, method)[0]
+	return result
+
+def computeValue(data, binSetList, method):
+	y = np.array(data.ix[:,-1])
+	binValueResult = []
+	binSetResult = []
+	for i in range(0,data.shape[1]-1):
+		xi = np.array(data.ix[:,i])	
+		binValue = 0
+		maxValue = 0
+		binResult = []
+		for numbinx in binSetList[i]:
+			for numbiny in binSetList[-1]:
+				if(method==0):
+					binValue = round(cm.umdv(xi,y,int(numbinx),int(numbiny)),2)
+				elif(method==1):
+					binValue = round(cm.cmdv(xi,y,int(numbinx),int(numbiny)),2)
+				elif(method==2):
+					binValue = round(cm.ucmdv(xi,y,int(numbinx),int(numbiny)),2)
+				elif(method==3):
+					binValue = round(cm.MIC(xi,y),2)
+				if(binValue>maxValue):
+					maxValue=binValue
+					binResult = [numbinx,numbiny]
+		binValueResult.append(maxValue)
+		binSetResult.append(binResult)
+	return [binValueResult, binSetResult]
+
+#################################### DYNAMIC (Exploration) BIN SELECTION ####################################
 
 def binarySearchBins(X, y, method=0, split=0, useSteps=0, normalizeResult=False, debug=False):
 	xbinsetList = []
@@ -18,21 +78,21 @@ def binarySearchBins(X, y, method=0, split=0, useSteps=0, normalizeResult=False,
 		rangeX = float(len(set(xi)))
 		#defining range of bins
 		if(useSteps==0):
-			step = st.computeStep(rangeX,rangeY,y.shape[0])
+			step = ut.computeStep(rangeX,rangeY,y.shape[0])
 			domainx = step[0]
 			numbiny = step[1]
 		elif(useSteps==1):
-			domainx = st.computeStepNormalized(y.shape[0])
+			domainx = ut.computeStepNormalized(y.shape[0])
 			numbiny = domainx
 		elif(useSteps==2):
-			domainx = st.computeStepV2(rangeX,y.shape[0])
-			numbiny = st.computeStepV2(rangeY,y.shape[0])	
+			domainx = ut.computeStepV2(rangeX,y.shape[0])
+			numbiny = ut.computeStepV2(rangeY,y.shape[0])	
 		elif(useSteps==3):
-			domainx = st.computeStepV2(rangeX,y.shape[0])
+			domainx = ut.computeStepV2(rangeX,y.shape[0])
 			numbiny = rangeY
 		elif(useSteps==4):
 			domainx = rangeX
-			numbiny = st.computeStepV2(rangeY,y.shape[0])	
+			numbiny = ut.computeStepV2(rangeY,y.shape[0])	
 		else:
 			domainx = rangeX
 			numbiny = rangeY	
@@ -255,3 +315,33 @@ def optimalRelevancyBins(X,y,method=1):
 	print xbinsetList
 	print xValueList
 
+#from operator import add
+
+#################################### VOTE BIN SELECTION ####################################
+
+def sumMixedCorrelation(ll, normalize=False):
+	ll = normalizeScales(ll)
+	arr = [round(sum(x)/len(ll),2) for x in zip(*ll)]
+	if(normalize):
+		maxValue = max(arr)
+		return [round(x / maxValue,2) for x in arr]
+	else:
+		return arr
+
+def findMultiplier(ll):
+	w = [max(sublist) for sublist in ll]
+	w = [max(w)]*len(w)
+	#print w
+	i = 0
+	for l in ll:
+		w[i] = round(float(w[i])/max(l),2)
+		i = i+1
+	return w
+
+def normalizeScales(ll):
+	w = findMultiplier(ll)
+	#print w
+	for i in range(len(ll)):
+		for j in range(len(ll[i])):
+			ll[i][j] = round(ll[i][j]*w[i],2)
+	return ll
