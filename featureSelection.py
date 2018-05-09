@@ -68,6 +68,7 @@ def removeRedundant(X, rank, threshold=0.95):
 			rankj = rank[it:]
 			for j in rankj:
 				value = binfeatures(X[:,i],X[:,j])
+				#print value
 				if(value>=threshold):
 					#print i,j,value
 					#print X[:,i].shape
