@@ -11,6 +11,22 @@ def getOrderRank(xlist):
 	rank.reverse()
 	return rank
 
+def maxPosition(l):
+	position = 0
+	maxVal = 0
+	for i in range(len(l)):
+		if(l[i]>maxVal):
+			maxVal = l[i]
+			position = i
+	return position
+
+def normalize(arr):
+	maxValue = max(arr)
+	arr[:] = [round(x / maxValue,2) for x in arr]
+	return arr
+
+#################################### Split sizes ####################################
+
 def splitSize(size,split, zero=True):
 	split = int(split)
 	bins = [size]*split
@@ -46,19 +62,7 @@ def intervalSplit(infLim,supLim,split=2,limitIncluded=False):
 	#bins = list(set(bins))
 	return bins
 
-def maxPosition(l):
-	position = 0
-	maxVal = 0
-	for i in range(len(l)):
-		if(l[i]>maxVal):
-			maxVal = l[i]
-			position = i
-	return position
-
-def normalize(arr):
-	maxValue = max(arr)
-	arr[:] = [round(x / maxValue,2) for x in arr]
-	return arr
+#################################### Compute steps ####################################
 
 def computeStep(rangeX, rangeY, N, v=2, sigma=0.95): #useSteps = 0
     num = rangeX*rangeY*v*sigma
@@ -84,3 +88,32 @@ def computeStepV2(rangeData, N, v=2, sigma=0.95): #useSteps = 2
     else:
         result = rangeData
     return int(result)
+    
+#################################### VOTE SELECTION ####################################
+
+def sumMixedCorrelation(ll, normalize=False):
+	ll = normalizeScales(ll)
+	arr = [round(sum(x)/len(ll),2) for x in zip(*ll)]
+	if(normalize):
+		maxValue = max(arr)
+		return [round(x / maxValue,2) for x in arr]
+	else:
+		return arr
+
+def findMultiplier(ll):
+	w = [max(sublist) for sublist in ll]
+	w = [max(w)]*len(w)
+	#print w
+	i = 0
+	for l in ll:
+		w[i] = round(float(w[i])/max(l),2)
+		i = i+1
+	return w
+
+def normalizeScales(ll):
+	w = findMultiplier(ll)
+	#print w
+	for i in range(len(ll)):
+		for j in range(len(ll[i])):
+			ll[i][j] = round(ll[i][j]*w[i],2)
+	return ll

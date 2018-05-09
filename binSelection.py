@@ -16,7 +16,7 @@ def binStatic(X, y, method=2):
 		value =  computeValue(xi,y,xiBinSet, yBinSet, method)	
 		result.append(value[0])
 		binSize.append(value[1])
-	print result
+	#print result
 	return result
 
 def computeValue(xi, y, xiBinSet, yBinSet, method):
@@ -32,7 +32,8 @@ def computeValue(xi, y, xiBinSet, yBinSet, method):
 			elif(method==1):
 				binValue = round(cm.cmdv(xi,y,int(numbinx),int(numbiny)),2)
 			elif(method==2):
-				binValue = round(cm.ucmdv(xi,y,int(numbinx),int(numbiny)),2)
+				#binValue = round(cm.ucmdv(xi,y,int(numbinx),int(numbiny)),2)
+				binValue = round(cm.ucmd(xi,y,int(numbinx),int(numbiny)),2)
 			elif(method==3):
 				binValue = round(cm.MIC(xi,y),2)
 			if(binValue>maxValue):
@@ -62,7 +63,7 @@ def computeBinSetStatic(f):
 	binSet = list(binSet)
 	return binSet
 
-#################################### DYNAMIC (Exploration) BIN SELECTION ####################################
+#################################### DYNAMIC (Search) BIN SELECTION ####################################
 
 def binarySearchBins(X, y, method=0, split=0, useSteps=0, normalizeResult=False, debug=False):
 	xbinsetList = []
@@ -117,7 +118,10 @@ def binarySearchBins(X, y, method=0, split=0, useSteps=0, normalizeResult=False,
 				elif(method==1):
 					dependencyValues.append(round(cm.cmdv(xi,y,int(numbinx),int(numbiny)),2))
 				elif(method==2):
-					dependencyValues.append(round(cm.ucmdv(xi,y,int(numbinx),int(numbiny)),2))
+					#dependencyValues.append(round(cm.ucmdv(xi,y,int(numbinx),int(numbiny)),2))
+					dependencyValues.append(round(cm.ucmd(xi,y,int(numbinx),int(numbiny)),2))
+				elif(method==3):
+					dependencyValues.append(round(cm.MIC(xi,y),2))
 				if(numbinx in explored):
 					repeated = True
 				else:
@@ -168,7 +172,7 @@ def binarySearchBins(X, y, method=0, split=0, useSteps=0, normalizeResult=False,
 		xValueList = ut.normalize(xValueList)
 	#optimalRelevancyBins(X,y,method)
 	#return [xValueList, xbinsetList]
-	print xValueList
+	#print xValueList
 	return xValueList
 
 
@@ -316,34 +320,3 @@ def optimalRelevancyBins(X,y,method=1):
 	print "================================================================"
 	print xbinsetList
 	print xValueList
-
-#from operator import add
-
-#################################### VOTE BIN SELECTION ####################################
-
-def sumMixedCorrelation(ll, normalize=False):
-	ll = normalizeScales(ll)
-	arr = [round(sum(x)/len(ll),2) for x in zip(*ll)]
-	if(normalize):
-		maxValue = max(arr)
-		return [round(x / maxValue,2) for x in arr]
-	else:
-		return arr
-
-def findMultiplier(ll):
-	w = [max(sublist) for sublist in ll]
-	w = [max(w)]*len(w)
-	#print w
-	i = 0
-	for l in ll:
-		w[i] = round(float(w[i])/max(l),2)
-		i = i+1
-	return w
-
-def normalizeScales(ll):
-	w = findMultiplier(ll)
-	#print w
-	for i in range(len(ll)):
-		for j in range(len(ll[i])):
-			ll[i][j] = round(ll[i][j]*w[i],2)
-	return ll

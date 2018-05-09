@@ -11,48 +11,51 @@ def greatestDiff(lst):
 			cutpos = i+1
 	return cutpos
 
-def greatestDiff(rank,weight,data):
-	maxdiff=0
-	cutpos=0
-	for i in range(0,len(weight)-1):
-		diff = weight[i]-weight[i+1]
-		if(diff>maxdiff):
-			maxdiff = diff
-			cutpos = i+1
-	X = np.array(data.ix[:,rank[0:cutpos]])
-	y = np.array(data.ix[:,-1])
-	#print cutpos, rank[0:cutpos]
-	return [X,y,cutpos]
-
-def fullValidationCut(rank,data):
-	y = np.array(data.ix[:,-1])
+def fullValidationCut(X,y,rank):
 	maxScore = 0
 	cutpos = 0
 	for i in range(1,len(rank)):
-		#print rank[0:i]
-		X = np.array(data.ix[:,rank[0:i]])
 		score = cf.getBestClassifiers(X,y)
 		if(score > maxScore):
 			maxScore = score
 			cutpos = i
-		#print "debug full",maxScore
-	X = np.array(data.ix[:,rank[0:cutpos]])
-	print cutpos, rank[0:cutpos], maxScore
-	return [X,y]
+	#X = np.array(data.ix[:,rank[0:cutpos]])
+	#print cutpos, rank[0:cutpos], maxScore
+	#return [X,y,cutpos]
+	return cutpos
 
-def monotonicValidationCut(rank,data):
-	y = np.array(data.ix[:,-1])
+def monotonicValidationCut(X,y,rank, consecutives=3):
+	lastScore = 0
+	cutpos = 0
+	counter = 0
+	for i in range(1,len(rank)):
+		#print X[:,rank[0:i]].shape
+		score = cf.getBestClassifiers(X[:,rank[0:i]],y)
+		#print lastScore,score
+		if(lastScore > score):
+			counter = counter + 1
+			if(counter>=consecutives):
+				cutpos = i-consecutives			
+				break
+		else:
+			counter = 0
+			lastScore = score
+	#X = np.array(data.ix[:,rank[0:cutpos]])
+	#print cutpos, rank[0:cutpos], lastScore
+	#return [X,y,cutpos]
+	return cutpos
+
+def monotonicValidationCutOr(X,y,rank):
 	lastScore = 0
 	cutpos = 0
 	for i in range(1,len(rank)):
-		X = np.array(data.ix[:,rank[0:i]])
-		#print X.shape
-		score = cf.getBestClassifiers(X,y)
-		#print "debug monotic",lastScore,score
+		#print X[:,rank[0:i]].shape
+		score = cf.getBestClassifiers(X[:,rank[0:i]],y)
 		if(lastScore > score):
 			cutpos = i-1
 			break
 		lastScore = score
-	X = np.array(data.ix[:,rank[0:cutpos]])
-	print cutpos, rank[0:cutpos], lastScore
-	return [X,y]	
+	#X = np.array(data.ix[:,rank[0:cutpos]])
+	#print cutpos, rank[0:cutpos], lastScore
+	#return [X,y,cutpos]
+	return cutpos
