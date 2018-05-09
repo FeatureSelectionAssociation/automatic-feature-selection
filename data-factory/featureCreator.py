@@ -1,6 +1,7 @@
 import random
 import math
 import matplotlib.pyplot as mpl
+import common as cm
 
 def absList(lvar,digits=2):
 	lresult = []
