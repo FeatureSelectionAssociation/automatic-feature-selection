@@ -36,33 +36,40 @@ def splitInformation(info,nsplits):
 def binStatic(X, y, processes=0, method=2):
 	cores = multiprocessing.cpu_count()
 	nfeat = X.shape[1]
-	#if(nfeat*pow(len(list(set(y))),0.5)*pow(cores,0.5)*len(y)*2>500000): 
-	if(processes==0):
-		jobs = cores
-		if(cores>nfeat):
-			jobs = nfeat
-	else:	
-		jobs=processes
-	pool = multiprocessing.Pool(processes=jobs)
-	info = splitInformation(X,jobs)
-	pbs=partial(bs.binStatic, y=y, method=method)
-	presults = pool.map(pbs, info)
-	results = [item for sublist in presults for item in sublist]
-	return results
+	pareval = int(nfeat*pow(len(list(set(y))),0.7)*pow(cores,0.5)*len(y)*2)
+	if(pareval>1000000): 
+		if(processes==0):
+			jobs = cores
+			if(cores>nfeat):
+				jobs = nfeat
+		else:	
+			jobs=processes
+		pool = multiprocessing.Pool(processes=jobs)
+		info = splitInformation(X,jobs)
+		pbs=partial(bs.binStatic, y=y, method=method)
+		presults = pool.map(pbs, info)
+		results = [item for sublist in presults for item in sublist]
+		return results
+	else:
+		return bs.binStatic(X,y,method=method)
 	
 
 def binarySearchBins(X, y, processes=0, method=0, split=0, useSteps=0, normalizeResult=False, debug=False):
-	if(processes==0):
-		nfeat = X.shape[1]
-		cores = multiprocessing.cpu_count()
-		jobs = cores
-		if(cores>nfeat):
-			jobs = nfeat
-	else:	
-		jobs=processes
-	pool = multiprocessing.Pool(processes=jobs)
-	info = splitInformation(X,jobs)
-	pbs=partial(bs.binarySearchBins, y=y, method=method, split=split, useSteps=useSteps, normalizeResult=normalizeResult, debug=debug)
-	presults = pool.map(pbs, info)
-	results = [item for sublist in presults for item in sublist]
-	return results
+	cores = multiprocessing.cpu_count()
+	nfeat = X.shape[1]
+	pareval = int(nfeat*pow(len(list(set(y))),0.7)*pow(cores,0.5)*len(y)*10)
+	if(pareval>1000000): 
+		if(processes==0):
+			jobs = cores
+			if(cores>nfeat):
+				jobs = nfeat
+		else:	
+			jobs=processes
+		pool = multiprocessing.Pool(processes=jobs)
+		info = splitInformation(X,jobs)
+		pbs=partial(bs.binarySearchBins, y=y, method=method, split=split, useSteps=useSteps, normalizeResult=normalizeResult, debug=debug)
+		presults = pool.map(pbs, info)
+		results = [item for sublist in presults for item in sublist]
+		return results
+	else:
+		return bs.binarySearchBins(X, y=y, method=method, split=split, useSteps=useSteps, normalizeResult=normalizeResult, debug=debug)
