@@ -3,7 +3,6 @@ import util as ut
 import numpy as np
 import math
 
-
 #################################### STATIC (FORMULA) BIN SELECTION ####################################
 #def binStatic(data, method=2):
 def binStatic(X, y, method=2):
