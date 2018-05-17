@@ -11,6 +11,26 @@ def greatestDiff(weights):
 			cutpos = i+1
 	return cutpos
 
+def monotonicValidationCut(X,y,rank, consecutives=3):
+	lastScore = 0
+	cutpos = 0
+	counter = 0
+	for i in range(1,len(rank)):
+		score = cf.getBestClassifiers(X[:,rank[0:i]],y)
+		#print "score:",lastScore,score
+		if(lastScore >= score):
+			counter = counter + 1
+			if(counter>=consecutives):
+				cutpos = i-consecutives			
+				break
+		else:
+			counter = 0
+			lastScore = score
+			cutpos = i
+	if(cutpos<=0):
+		cutpos=1
+	return cutpos
+
 def fullValidationCut(X,y,rank):
 	maxScore = 0
 	cutpos = 0
@@ -20,26 +40,4 @@ def fullValidationCut(X,y,rank):
 		if(score > maxScore):
 			maxScore = score
 			cutpos = i
-	return cutpos
-
-def monotonicValidationCut(X,y,rank, consecutives=20):
-	lastScore = 0
-	cutpos = 0
-	counter = 0
-	for i in range(1,len(rank)):
-		score = cf.getBestClassifiers(X[:,rank[0:i]],y)
-		print "score:",lastScore,score
-		if(lastScore >= score):
-			counter = counter + 1
-			#print "f1"
-			if(counter>=consecutives):
-				#print "f2"
-				cutpos = i-consecutives			
-				break
-		else:
-			counter = 0
-			lastScore = score
-			cutpos = i
-	if(cutpos<=0):
-		cutpos=1
 	return cutpos

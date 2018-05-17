@@ -1,6 +1,11 @@
 import multiprocessing
 import binSelection as bs
 from functools import partial
+#
+#import util as ut
+#import binSelection as bs
+#import cuts
+
 
 def splitArray(number, size):
 	ss = number/float(size)
@@ -33,11 +38,20 @@ def splitInformation(info,nsplits):
 		sInfo.append(info[:,i[0]:i[1]])
 	return tuple(sInfo)
 
+def splitInformationRows(info,nsplits):
+	tl = tuplesPoolGenerator(int(info.shape[0]),nsplits)
+	sInfo = []
+	for i in tl:
+		sInfo.append(info[i[0]:i[1],:])
+	return tuple(sInfo)
+
+#################################### RELEVANCE IDENTIFICATION ####################################
+
 def binStatic(X, y, processes=0, method=2):
 	cores = multiprocessing.cpu_count()
 	nfeat = X.shape[1]
 	pareval = int(nfeat*pow(len(list(set(y))),0.7)*pow(cores,0.5)*len(y)*2)
-	if(pareval>1000000): 
+	if(pareval>500000): 
 		if(processes==0):
 			jobs = cores
 			if(cores>nfeat):
@@ -58,7 +72,7 @@ def binarySearchBins(X, y, processes=0, method=0, split=0, useSteps=0, normalize
 	cores = multiprocessing.cpu_count()
 	nfeat = X.shape[1]
 	pareval = int(nfeat*pow(len(list(set(y))),0.7)*pow(cores,0.5)*len(y)*10)
-	if(pareval>1000000): 
+	if(pareval>500000): 
 		if(processes==0):
 			jobs = cores
 			if(cores>nfeat):
@@ -73,3 +87,24 @@ def binarySearchBins(X, y, processes=0, method=0, split=0, useSteps=0, normalize
 		return results
 	else:
 		return bs.binarySearchBins(X, y=y, method=method, split=split, useSteps=useSteps, normalizeResult=normalizeResult, debug=debug)
+
+#################################### REDUNDANT ELIMINITATION ####################################
+def parallelRemoveRedundant(X, rank, processes=0, threshold=0.95):
+	cores = multiprocessing.cpu_count()
+	samples = X.shape[0]
+	if(processes==0):
+		jobs = cores
+		if(cores>samples):
+			jobs = samples
+	else:	
+		jobs=processes	
+	pool = multiprocessing.Pool(processes=jobs)
+	info = splitInformationRows(X,jobs)
+	pbs=partial(bs.removeRedundant, rank=rank, threshold=threshold)
+	results = pool.map(pbs, info)
+	removeSet = set(rank) - set(results[0]) 
+	for r in results[1:]:
+		removeSet = removeSet & (set(rank) - set(r))
+	for s in removeSet:
+		rank.remove(s)
+	return rank

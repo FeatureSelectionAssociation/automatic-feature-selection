@@ -319,3 +319,45 @@ def optimalRelevancyBins(X,y,method=1):
 	print "================================================================"
 	print xbinsetList
 	print xValueList
+
+#################################### REDUNDANT ELIMINITATION ####################################
+def removeRedundant(X, rank, threshold=0.95):
+	it = 0
+	for i in rank:
+		if (len(rank)>1):
+			it = it+1
+			rankj = rank[it:]
+			for j in rankj:
+				value = binfeatures(X[:,i],X[:,j])
+				#print value
+				if(value>=threshold):
+					#print i,j,value
+					#print X[:,i].shape
+					#print X[:,j]
+					rank.remove(j)
+	return rank
+
+def binfeatures(xi, xj, method=2):
+	result = []
+	binSize = []
+	xiBin = computeBinSetStatic(xi)		
+	xjBin = computeBinSetStatic(xj)
+	value = computeValueRed(xi, xj, xiBin, xjBin, method)[0]
+	return value
+
+def computeValueRed(xi, y, xiBinSet, yBinSet, method):
+	binValueResult = []
+	binSetResult = []
+	binValue = 0
+	maxValue = 0
+	binResult = []
+	for numbinx in xiBinSet:
+		for numbiny in yBinSet:
+			if(method==2):
+				binValue = round(cm.ucmd(xi,y,int(numbinx),int(numbiny)),2)
+			elif(method==3):
+				binValue = round(cm.MIC(xi,y),2)
+			if(binValue>maxValue):
+				maxValue=binValue
+				binResult = [numbinx,numbiny]
+	return [maxValue, binResult]
