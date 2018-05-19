@@ -1,7 +1,6 @@
 import CorrelationMesures as cm
 import util as ut
 import numpy as np
-import math
 
 #################################### STATIC (FORMULA) BIN SELECTION ####################################
 #def binStatic(data, method=2):
@@ -75,7 +74,7 @@ def binarySearchBins(X, y, method=0, split=0, useSteps=0, normalizeResult=False,
 		explored = []
 		repeated = False #flag of repeated bin size
 		bestBin = 2
-		maxValue = 0
+		maxValue = -1
 		xi = X[:,i]
 		rangeX = float(len(set(xi)))
 		#defining range of bins
@@ -88,7 +87,7 @@ def binarySearchBins(X, y, method=0, split=0, useSteps=0, normalizeResult=False,
 			numbiny = domainx
 		elif(useSteps==2):
 			domainx = ut.computeStepV2(rangeX,y.shape[0])
-			numbiny = ut.computeStepV2(rangeY,y.shape[0])	
+			numbiny = ut.computeStepV2(rangeY,y.shape[0])
 		elif(useSteps==3):
 			domainx = ut.computeStepV2(rangeX,y.shape[0])
 			numbiny = rangeY
@@ -117,10 +116,7 @@ def binarySearchBins(X, y, method=0, split=0, useSteps=0, normalizeResult=False,
 				elif(method==1):
 					dependencyValues.append(round(cm.cmdv(xi,y,int(numbinx),int(numbiny)),2))
 				elif(method==2):
-					#dependencyValues.append(round(cm.ucmdv(xi,y,int(numbinx),int(numbiny)),2))
 					dependencyValues.append(round(cm.ucmd(xi,y,int(numbinx),int(numbiny)),2))
-				elif(method==3):
-					dependencyValues.append(round(cm.MIC(xi,y),2))
 				if(numbinx in explored):
 					repeated = True
 				else:
@@ -137,7 +133,13 @@ def binarySearchBins(X, y, method=0, split=0, useSteps=0, normalizeResult=False,
 				print "currentMaxPosition: ", currentMaxPosition
 				print "explored: ",explored
 				print "bestBin:", bestBin
+			#Adding try to avoid bin not found
+			#try:
 			bbi = explored.index(bestBin) #best bin index
+			#except:
+			#	print "Enter here"
+			#	bestBin = currentBins[0]
+			#	bbi = explored.index(bestBin)
 			if(debug):
 				print "bbi: ", bbi
 			
@@ -193,7 +195,7 @@ def cuadratureSearchBins(X, method=1, split=3, xjlist=False, consecutiveDepth=3,
 				xjExplored = []				
 				xiBestBin = 2
 				xjBestBin = 2
-				maxValue = 0
+				maxValue = -1
 				currentDepth = 0
 				totalDepth = 0
 				continueFlag = True

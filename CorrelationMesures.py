@@ -1,7 +1,6 @@
 __author__ = 'AlexLlamas'
 import numpy as np
 import math
-from typing import Dict
 from minepy import MINE
 
 # -------------------------------------- Mutual information -----------------------------------------------------------

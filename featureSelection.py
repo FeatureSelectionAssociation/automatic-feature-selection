@@ -1,8 +1,5 @@
 import util as ut
-import binSelection as bs
 import cuts
-from pandas import read_csv, np
-import CorrelationMesures as cm
 import parallel as p
 
 #binMethod 0 = Relevancy with total static bin selection
@@ -16,7 +13,7 @@ import parallel as p
 #cutMethod 0 = greatestDiff2
 #cutMethod 1 = monotonicValidationCut
 #cutMethod 2 = fullValidationCut
-def featureSelection(X,y, corrOption=4, binMethod=0, cutMethod=1, minRed=0, debug=True):
+def featureSelection(X,y, processes=0, corrOption=4, binMethod=0, cutMethod=1, minRed=0, debug=False):
 	if(corrOption<=3):
 		corrMethod = corrOption
 	elif(corrOption==4):
@@ -27,36 +24,37 @@ def featureSelection(X,y, corrOption=4, binMethod=0, cutMethod=1, minRed=0, debu
 	if(corrOption<=3):
 		if(binMethod==0):
 			#weights = bs.binStatic(X,y,corrMethod)
-			weights = p.binStatic(X,y,0,corrMethod)
+			weights = p.binStatic(X=X,y=y,processes=processes,method=corrMethod)
 		elif(binMethod==1):
 			#weights = bs.binarySearchBins(X,y,corrMethod,0,2)
-			weights = p.binarySearchBins(X,y,0,corrMethod,0,2)
+			#weights = p.binarySearchBins(X,y,processes,corrMethod,0,2)
+			weights = p.binarySearchBins(X=X, y=y, processes=processes, method=corrMethod, split=0, useSteps=2, normalizeResult=False, debug=False)			
 	else:
 		for corrMethod in corrOption: 	
 			#print corrMethod
 			if(binMethod==0):
 				#wlist.append(bs.binStatic(X,y,corrMethod))
-				wlist.append(p.binStatic(X,y,0,corrMethod))
+				wlist.append(p.binStatic(X=X,y=y,processes=processes,method=corrMethod))
 			elif(binMethod==1):
 				#wlist.append(bs.binarySearchBins(X,y,corrMethod,0,2))
-				wlist.append(p.binarySearchBins(X,y,0,corrMethod,0,2))
+				wlist.append(p.binarySearchBins(X=X, y=y, processes=processes, method=corrMethod, split=0, useSteps=2, normalizeResult=False, debug=False))
 		weights = (ut.sumMixedCorrelation(wlist))
 	rank = ut.getOrderRank(weights)
 	orank = set(rank)
 	#if(debug):
 	#	print "original",rank
 	if(cutMethod==0):
-		rank = rank[0:cuts.greatestDiff(weights)]
+		rank = rank[0:cuts.greatestDiff(weights=weights)]
 	elif(cutMethod==1):
-		rank = rank[0:cuts.monotonicValidationCut(X,y,rank,5)]
+		rank = rank[0:cuts.monotonicValidationCut(X=X,y=y,rank=rank,consecutives=5)]
 	elif(cutMethod==2):
-		#rank = rank[0:cuts.fullValidationCut(X,y,rank)]
-		rank = rank[0:cuts.monotonicValidationCut(X,y,rank,20)]
+		rank = rank[0:cuts.fullValidationCut(X=X,y=y,rank=rank)]
+		#rank = rank[0:cuts.monotonicValidationCut(X,y,rank,20)]
 	if(debug):
 		print "cutted",rank
 	if(minRed==1):
 		#rank = removeRedundant(X,rank)
-		rank = p.parallelRemoveRedundant(X,rank,0)
+		rank = p.parallelRemoveRedundant(X=X, rank=rank, processes=processes, threshold=0.95)
 	if(debug):
 		print "mrmr",rank
 	#if(len(rank)<1):

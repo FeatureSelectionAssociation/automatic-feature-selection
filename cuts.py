@@ -1,4 +1,3 @@
-import numpy as np
 import classifiers as cf
 
 def greatestDiff(weights):
@@ -11,7 +10,7 @@ def greatestDiff(weights):
 			cutpos = i+1
 	return cutpos
 
-def monotonicValidationCut(X,y,rank, consecutives=3):
+def monotonicValidationCut(X,y,rank,consecutives=5):
 	lastScore = 0
 	cutpos = 0
 	counter = 0
@@ -36,7 +35,6 @@ def fullValidationCut(X,y,rank):
 	cutpos = 0
 	for i in range(1,len(rank)):
 		score = cf.getBestClassifiers(X[:,rank[0:i]],y)
-		#print "score:",maxScore,score
 		if(score > maxScore):
 			maxScore = score
 			cutpos = i

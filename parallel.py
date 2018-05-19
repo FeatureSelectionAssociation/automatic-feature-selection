@@ -1,12 +1,6 @@
 import multiprocessing
 import binSelection as bs
 from functools import partial
-import gc
-#
-#import util as ut
-#import binSelection as bs
-#import cuts
-
 
 def splitArray(number, size):
 	ss = number/float(size)
@@ -73,6 +67,8 @@ def binStatic(X, y, processes=0, method=2):
 	
 
 def binarySearchBins(X, y, processes=0, method=0, split=0, useSteps=0, normalizeResult=False, debug=False):
+	if(method==3):
+		return binStatic(X,y,0,3)
 	cores = multiprocessing.cpu_count()
 	nfeat = X.shape[1]
 	pareval = int(nfeat*pow(len(list(set(y))),0.7)*pow(cores,0.5)*len(y)*2)
