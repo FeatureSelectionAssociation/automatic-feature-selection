@@ -10,16 +10,7 @@ def artificialTest():
 	#Syntentic classification datasets
 	#files = ['data1000-f1.csv', 'data1000-f2.csv','data1000-f3.csv','data1000-f4.csv','data5000-f1.csv', 'data5000-f2.csv','data5000-f3.csv','data5000-f4.csv','data20000-f1.csv', 'data20000-f2.csv','data20000-f3.csv','data20000-f4.csv','data1000-f1-r500.csv','data5000-f1-r500.csv','data20000-f1-r500.csv']
 	#buenos = [[0,1,2,3,4,5,6,13,14],[0,1,8,9],[0,1,6,7],[0,1,3,2],[0,1,2,3,4,5,6,13,14],[0,1,8,9],[0,1,6,7],[0,1,3,2],[0,1,2,3,4,5,6,13,14],[0,1,8,9],[0,1,6,7],[0,1,3,2],[0,1,2,3,4,5,6,13,14],[0,1,2,3,4,5,6,13,14],[0,1,2,3,4,5,6,13,14]]	
-	#files = ['data1000-f1.csv', 'data1000-f2.csv','data1000-f3.csv','data1000-f4.csv']
-	#buenos = [[0,1,2,3,4,5,6,13,14],[0,1,8,9],[0,1,6,7],[0,1,3,2]]
-	#files = ['data5000-f1.csv', 'data5000-f2.csv','data5000-f3.csv','data5000-f4.csv']
-	#buenos = [[0,1,2,3,4,5,6,13,14],[0,1,8,9],[0,1,6,7],[0,1,3,2]]
-	#files = ['data20000-f1.csv', 'data20000-f2.csv','data20000-f3.csv','data20000-f4.csv']
-	#buenos = [[0,1,2,3,4,5,6,13,14],[0,1,8,9],[0,1,6,7],[0,1,3,2]]
-	#files = ['data1000-f1-r500.csv']
-	#buenos = [[0,1,2,3,4,5,6]]
 	
-
 	#Syntetic Regression datasets
 	#files = ['regression/reg1000-f1.csv']
 	#buenos = [[0,1,2,3,4,5]]
@@ -27,8 +18,6 @@ def artificialTest():
 	#Real Datasets
 	files = ['real/sonar_scale.csv', 'real/splice_scale.csv', 'real/colon-cancer.csv', 'real/leu.csv', 'real/duke.csv', 'real/BH20000.csv', 'real/madelon-test.csv']
 	buenos = [['?'],['?'],['?'],['?'],['?'],['?'],['?']]
-	#files = ['real/colon-cancer.csv']
-	#buenos = [['?']]	
 	
 	i=0
 	for f in files:

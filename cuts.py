@@ -16,7 +16,6 @@ def monotonicValidationCut(X,y,rank,consecutives=5):
 	counter = 0
 	for i in range(1,len(rank)):
 		score = cf.getBestClassifiers(X[:,rank[0:i]],y)
-		#print "score:",lastScore,score
 		if(lastScore >= score):
 			counter = counter + 1
 			if(counter>=consecutives):

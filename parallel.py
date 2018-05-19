@@ -46,7 +46,6 @@ def binStatic(X, y, processes=0, method=2):
 	cores = multiprocessing.cpu_count()
 	nfeat = X.shape[1]
 	pareval = int(nfeat*pow(len(list(set(y))),0.7)*pow(cores,0.5)*len(y)*2)
-	#print pareval
 	if(pareval>1000000):
 		if(processes==0):
 			jobs = cores
@@ -72,7 +71,6 @@ def binarySearchBins(X, y, processes=0, method=0, split=0, useSteps=0, normalize
 	cores = multiprocessing.cpu_count()
 	nfeat = X.shape[1]
 	pareval = int(nfeat*pow(len(list(set(y))),0.7)*pow(cores,0.5)*len(y)*2)
-	#print pareval
 	if(pareval>1000000): 
 		if(processes==0):
 			jobs = cores
@@ -106,10 +104,8 @@ def parallelRemoveRedundant(X, rank, processes=0, threshold=0.95):
 	pbs=partial(bs.removeRedundant, rank=rank, threshold=threshold)
 	results = pool.map(pbs, info)
 	removeSet = set(rank) - set(results[0])
-	#print removeSet
 	for r in results[1:]:
 		removeSet = removeSet & (set(rank) - set(r))
-		#print removeSet
 	for s in removeSet:
 		rank.remove(s)
 	pool.close()

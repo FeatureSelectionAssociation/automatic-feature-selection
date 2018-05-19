@@ -3,7 +3,6 @@ import util as ut
 import numpy as np
 
 #################################### STATIC (FORMULA) BIN SELECTION ####################################
-#def binStatic(data, method=2):
 def binStatic(X, y, method=2):
 	yBinSet = computeBinSetStatic(y)
 	result = []
@@ -30,7 +29,6 @@ def computeValue(xi, y, xiBinSet, yBinSet, method):
 			elif(method==1):
 				binValue = round(cm.cmdv(xi,y,int(numbinx),int(numbiny)),2)
 			elif(method==2):
-				#binValue = round(cm.ucmdv(xi,y,int(numbinx),int(numbiny)),2)
 				binValue = round(cm.ucmd(xi,y,int(numbinx),int(numbiny)),2)
 			elif(method==3):
 				binValue = round(cm.MIC(xi,y),2)
@@ -134,12 +132,7 @@ def binarySearchBins(X, y, method=0, split=0, useSteps=0, normalizeResult=False,
 				print "explored: ",explored
 				print "bestBin:", bestBin
 			#Adding try to avoid bin not found
-			#try:
 			bbi = explored.index(bestBin) #best bin index
-			#except:
-			#	print "Enter here"
-			#	bestBin = currentBins[0]
-			#	bbi = explored.index(bestBin)
 			if(debug):
 				print "bbi: ", bbi
 			
@@ -171,9 +164,6 @@ def binarySearchBins(X, y, method=0, split=0, useSteps=0, normalizeResult=False,
 		xValueList.append(round(maxValue,2))
 	if(normalizeResult):
 		xValueList = ut.normalize(xValueList)
-	#optimalRelevancyBins(X,y,method)
-	#return [xValueList, xbinsetList]
-	#print xValueList
 	return xValueList
 
 
@@ -281,19 +271,13 @@ def cuadratureSearchBins(X, method=1, split=3, xjlist=False, consecutiveDepth=3,
 						continueFlag = False
 				print "maxValue: ", maxValue
 				print "bestBins:", xiBestBin, ":", xjBestBin
-				#xbinsetList.append([xiBestBin,xjBestBin])
-				#xValueList.append(round(maxValue,2))
 				xbinsetList[str(i)+":"+str(j)] = [xiBestBin,xjBestBin]
 				xValueList[str(i)+":"+str(j)] = round(maxValue,2)
 			print "----------------------------------------------------------------"	
 	print "================================================================"
-	#print xbinsetList
-	#print ""
-	#print xValueList
 	s = sorted(xValueList, key=str.lower)
 	for z in s:
 		print z, ":", xValueList[z]
-		#print s, ":", xValueList[z]
 	return xbinsetList
 
 
@@ -331,11 +315,7 @@ def removeRedundant(X, rank, threshold=0.95):
 			rankj = rank[it:]
 			for j in rankj:
 				value = binfeatures(X[:,i],X[:,j])
-				#print value
 				if(value>=threshold):
-					#print i,j,value
-					#print X[:,i].shape
-					#print X[:,j]
 					rank.remove(j)
 	return rank
 

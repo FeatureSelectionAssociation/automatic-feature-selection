@@ -17,8 +17,6 @@ classifiers = [
 		AdaBoostClassifier()
     ]
 
-
-
 def getBestClassifiers(X,y,testPerc=0.4):
 	global classifiers
 	global names
@@ -28,5 +26,4 @@ def getBestClassifiers(X,y,testPerc=0.4):
 		clf.fit(X_train, y_train)
 		score = clf.score(X_test, y_test)
 		fscore += score
-		#print (name, round(score,2))
 	return round(fscore/len(classifiers),2)
