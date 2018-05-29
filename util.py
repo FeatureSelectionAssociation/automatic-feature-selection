@@ -51,19 +51,15 @@ def intervalSplit(infLim,supLim,split=2,limitIncluded=False):
 		while(addValue <= supLim):
 			bins.append(int(round(addValue)))
 			addValue = addValue + stepSize
-			#print addValue
 	else:
 		stepSize = (supLim-infLim)/(split+1.0)
 		addValue = infLim
 		while(addValue + stepSize < supLim):
 			addValue = addValue + stepSize
-			#print addValue
 			bins.append(int(round(addValue)))
-	#bins = list(set(bins))
 	return bins
 
 #################################### Compute steps ####################################
-
 def computeStep(rangeX, rangeY, N, v=2, sigma=0.95): #useSteps = 0
     num = rangeX*rangeY*v*sigma
     den = N*pow((1-sigma),0.5)
@@ -103,7 +99,6 @@ def sumMixedCorrelation(ll, normalize=False):
 def findMultiplier(ll):
 	w = [max(sublist) for sublist in ll]
 	w = [max(w)]*len(w)
-	#print w
 	i = 0
 	for l in ll:
 		w[i] = round(float(w[i])/max(l),2)
@@ -112,7 +107,6 @@ def findMultiplier(ll):
 
 def normalizeScales(ll):
 	w = findMultiplier(ll)
-	#print w
 	for i in range(len(ll)):
 		for j in range(len(ll[i])):
 			ll[i][j] = round(ll[i][j]*w[i],2)
