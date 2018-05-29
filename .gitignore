@@ -1,5 +1,6 @@
 # heavy data for the git
 Data/
+Data2/
 .idea/
 
 # Byte-compiled / optimized / DLL files
@@ -104,5 +105,5 @@ ENV/
 # mypy
 .mypy_cache/
 
-# Unit Test File
-#unitTest.py
+# exe files
+*.exe
