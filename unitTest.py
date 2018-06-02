@@ -71,7 +71,7 @@ def artificialTest():
 		
 		#'''
 		startTime = time.time()
-		print "Full features Accurracy:", cf.getBestClassifiers(X,y)
+		print "Full features Accurracy:", cf.clasificationJudge(X,y)
 		endTime = time.time()
 		print "Full classification time: " + str(round(endTime-startTime,3)) + " seconds."
 		
@@ -80,7 +80,7 @@ def artificialTest():
 		endTime = time.time()
 		print "\nCut GreatestDiff time: " + str(round(endTime-startTime,3)) + " seconds."
 		startTime = time.time()
-		print "GreatestDiff Accurracy:", cf.getBestClassifiers(X[:,rank[0:cutpos1]],y), " #features:", cutpos1 		
+		print "GreatestDiff Accurracy:", cf.clasificationJudge(X[:,rank[0:cutpos1]],y), " #features:", cutpos1 		
 		endTime = time.time()
 		print "Classification GreatestDiff time: " + str(round(endTime-startTime,3)) + " seconds."
 		
@@ -89,7 +89,7 @@ def artificialTest():
 		endTime = time.time()
 		print "\nCut MonotonicValidationCut time: " + str(round(endTime-startTime,3)) + " seconds."
 		startTime = time.time()
-		print "MonotonicValidation Accurracy:", cf.getBestClassifiers(X[:,rank[0:cutpos2]],y), " #features:", cutpos2 
+		print "MonotonicValidation Accurracy:", cf.clasificationJudge(X[:,rank[0:cutpos2]],y), " #features:", cutpos2 
 		endTime = time.time()
 		print "Classification MonotonicValidationCut time: " + str(round(endTime-startTime,3)) + " seconds."
 		'''
@@ -100,7 +100,7 @@ def artificialTest():
 		endTime = time.time()
 		print "Cut FullValidationCut time: " + str(round(endTime-startTime,3)) + " seconds."
 		startTime = time.time()
-		print "FullValidationCut Accurracy:", cf.getBestClassifiers(X[:,rank[0:cutpos3]],y), " #features:", cutpos3 
+		print "FullValidationCut Accurracy:", cf.clasificationJudge(X[:,rank[0:cutpos3]],y), " #features:", cutpos3 
 		endTime = time.time()
 		print "Classification FullValidationCut time: " + str(round(endTime-startTime,3)) + " seconds."
 		#'''

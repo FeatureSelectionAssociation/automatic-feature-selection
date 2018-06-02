@@ -54,7 +54,7 @@ def mrmrTest(method=0):
 		y = np.array(data.ix[:,-1])
 		print filepath, buenos[i]
 		startTime = time.time()
-		acc = cf.getBestClassifiers(X,y)
+		acc = cf.clasificationJudge(X,y)
 		endTime = time.time()
 		print "original:", acc, X.shape[1], str(round(endTime-startTime,3))+"s"
 		try:
@@ -66,7 +66,7 @@ def mrmrTest(method=0):
 			timefs = round(endTime-startTime,3)
 			X = np.array(data.ix[:,rank])
 			startTime = time.time()
-			acc = cf.getBestClassifiers(X,y)
+			acc = cf.clasificationJudge(X,y)
 			endTime = time.time()
 			timecf = round(endTime-startTime,3)
 			print "result: ",acc, timefs, timecf, len(rank), rank[0:5]

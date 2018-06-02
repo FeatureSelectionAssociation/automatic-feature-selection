@@ -21,7 +21,7 @@ def artificialTest():
 		y = np.array(data.ix[:,-1])
 		print filepath, buenos[i]
 		startTime = time.time()
-		acc = cf.getBestClassifiers(X,y)
+		acc = cf.clasificationJudge(X,y)
 		endTime = time.time()
 		print "original:", acc, X.shape[1], str(round(endTime-startTime,3))+"s"
 		for minRed in range(0,2):
@@ -35,7 +35,7 @@ def artificialTest():
 							timefs = round(endTime-startTime,3)
 							X = np.array(data.ix[:,rank])
 							startTime = time.time()
-							acc = cf.getBestClassifiers(X,y)
+							acc = cf.clasificationJudge(X,y)
 							endTime = time.time()
 							timecf = round(endTime-startTime,3)
 							print minRed,binMethod, cutMethod, corrOption, acc, timefs, timecf, len(rank), rank[0:5]			
