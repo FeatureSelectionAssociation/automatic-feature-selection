@@ -84,7 +84,27 @@ def computeStepV2(rangeData, N, v=2, sigma=0.95): #useSteps = 2
     else:
         result = rangeData
     return int(result)
-    
+
+#################################### DATASET TYPE ANALYSIS ####################################
+
+def datesetType(y): #useSteps = 2
+    samples = len(y)
+    domainTarget = len(list(set(y)))
+    if(domainTarget <= pow(samples,0.5)/2): #eg. 100 samples must have at most sqrt(100)/2 = 5 differnt target to be consider classification problem
+    	return 0 #classification
+    else:
+    	return 1 #Regression
+
+
+    if(rangeData>(pow(N,0.5)/2)):
+        num = rangeData*v*sigma
+        den = N*pow((1-sigma),0.5)
+        step = pow(num/den,0.5)
+        result = int(math.floor(rangeData / step))
+    else:
+        result = rangeData
+    return int(result)
+  
 #################################### VOTE SELECTION ####################################
 
 def sumMixedCorrelation(ll, normalize=False):

@@ -30,8 +30,6 @@ regressors = [
 		RandomForestRegressor(max_depth=5, n_estimators=10)
     ]
 
-
-
 def clasificationJudge(X,y,testPerc=0.5, runs=3):
 	global classifiers
 	global namesc
@@ -54,5 +52,5 @@ def regresionJudge(X,y,testPerc=0.5, runs=3):
 			reg.fit(X_train, y_train)
 			ypred = reg.predict(X_test)
 			error += mean_squared_error(y_test, ypred)
-	return -round(error/(len(regressors)*runs),3)
+	return round(error/(len(regressors)*runs),3)
 

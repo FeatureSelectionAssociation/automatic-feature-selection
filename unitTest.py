@@ -2,7 +2,7 @@ from pandas import read_csv, np
 import util as ut
 import cuts
 import binSelection as bs
-import classifiers as cf
+import model as ml
 import parallel as p
 import time
 
@@ -10,24 +10,28 @@ def artificialTest():
 	#Syntentic classification datasets
 	#files = ['data1000-f1.csv', 'data1000-f2.csv','data1000-f3.csv','data1000-f4.csv','data5000-f1.csv', 'data5000-f2.csv','data5000-f3.csv','data5000-f4.csv','data20000-f1.csv', 'data20000-f2.csv','data20000-f3.csv','data20000-f4.csv','data1000-f1-r500.csv','data5000-f1-r500.csv','data20000-f1-r500.csv']
 	#buenos = [[0,1,2,3,4,5,6,13,14],[0,1,8,9],[0,1,6,7],[0,1,3,2],[0,1,2,3,4,5,6,13,14],[0,1,8,9],[0,1,6,7],[0,1,3,2],[0,1,2,3,4,5,6,13,14],[0,1,8,9],[0,1,6,7],[0,1,3,2],[0,1,2,3,4,5,6,13,14],[0,1,2,3,4,5,6,13,14],[0,1,2,3,4,5,6,13,14]]	
-	
+	#modelsType = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+
 	#Syntetic Regression datasets
 	#files = ['regression/reg1000-f1.csv']
 	#buenos = [[0,1,2,3,4,5]]
+	#modelsType = [1]
 	
 	#Real Datasets
 	files = ['real/sonar_scale.csv', 'real/splice_scale.csv', 'real/colon-cancer.csv', 'real/leu.csv', 'real/duke.csv', 'real/BH20000.csv', 'real/madelon-test.csv']
 	buenos = [['?'],['?'],['?'],['?'],['?'],['?'],['?']]
+	modelsType = [0,0,0,0,0,0,0]
 	
 	i=0
 	for f in files:
+		modelType = modelsType[i]
 		filename = 'Data/'+f
-	
 		########### Separate Data ###########
 		print filename, buenos[i]
 		data = read_csv(filename)
 		X = np.array(data.ix[:,0:-1])
 		y = np.array(data.ix[:,-1])
+		
 		
 		########### Search ###########
 		#Static search
@@ -42,12 +46,12 @@ def artificialTest():
 		endTime = time.time()
 		print "Parallel static " + str(round(endTime-startTime,3)) + " seconds."
 		print "weights:", weights[0:20]
-		#weights = ut.sumMixedCorrelation([bs.binStatic(X,y,0),bs.binStatic(X,y,1)])		
-		#print "Combined Static:",weight
+		weights = ut.sumMixedCorrelation([bs.binStatic(X,y,0),bs.binStatic(X,y,1)])		
+		print "Combined Static:",weights
 		#'''
-
+		
 		#Dynamic search
-		#'''
+		'''
 		startTime = time.time()
 		weights = bs.binarySearchBins(X,y,2,0,2)
 		endTime = time.time()
@@ -58,8 +62,8 @@ def artificialTest():
 		endTime = time.time()
 		print "Parallel dynamic " + str(round(endTime-startTime,3)) + " seconds."
 		print "weights:", weights[0:20]
-		#weights = ut.sumMixedCorrelation([bs.binarySearchBins(X,y,0,0,2),bs.binarySearchBins(X,y,1,0,2)])
-		#print "Combined Dyniamic:",weights
+		weights = ut.sumMixedCorrelation([bs.binarySearchBins(X,y,0,0,2),bs.binarySearchBins(X,y,1,0,2)])
+		print "Combined Dyniamic:",weights
 		#'''
 		
 
@@ -71,36 +75,39 @@ def artificialTest():
 		
 		#'''
 		startTime = time.time()
-		print "Full features Accurracy:", cf.clasificationJudge(X,y)
+
+		print "Full features Accurracy:", ml.clasificationJudge(X=X, y=y, testPerc=0.5, runs=3)
 		endTime = time.time()
 		print "Full classification time: " + str(round(endTime-startTime,3)) + " seconds."
 		
 		startTime = time.time()
 		cutpos1 = cuts.greatestDiff(weights)
+		print rank[0:cutpos1]
 		endTime = time.time()
 		print "\nCut GreatestDiff time: " + str(round(endTime-startTime,3)) + " seconds."
 		startTime = time.time()
-		print "GreatestDiff Accurracy:", cf.clasificationJudge(X[:,rank[0:cutpos1]],y), " #features:", cutpos1 		
+		print "GreatestDiff Accurracy:", ml.clasificationJudge(X=X[:,rank[0:cutpos1]], y=y, testPerc=0.5, runs=3), " #features:", cutpos1 		
 		endTime = time.time()
 		print "Classification GreatestDiff time: " + str(round(endTime-startTime,3)) + " seconds."
 		
+		#'''
 		startTime = time.time()
-		cutpos2 = cuts.monotonicValidationCut(X,y,rank)
+
+		cutpos2 = cuts.monotonicValidationCut(X=X, y=y ,rank=rank, modelType=modelType, consecutives=5, runs=3)
 		endTime = time.time()
 		print "\nCut MonotonicValidationCut time: " + str(round(endTime-startTime,3)) + " seconds."
 		startTime = time.time()
-		print "MonotonicValidation Accurracy:", cf.clasificationJudge(X[:,rank[0:cutpos2]],y), " #features:", cutpos2 
+		print "MonotonicValidation Accurracy:", ml.clasificationJudge(X=X[:,rank[0:cutpos2]], y=y, testPerc=0.5, runs=3), " #features:", cutpos2 
 		endTime = time.time()
 		print "Classification MonotonicValidationCut time: " + str(round(endTime-startTime,3)) + " seconds."
-		'''
-		'''
+		#'''
+		#'''
 		startTime = time.time()
-		cutpos3 = cuts.monotonicValidationCut(X,y,rank,10)
-		#cutpos3 = cuts.fullValidationCut(X,y,rank)
+		cutpos3 = cuts.monotonicValidationCut(X=X, y=y ,rank=rank, modelType=modelType, consecutives=X.shape[1], runs=3)
 		endTime = time.time()
 		print "Cut FullValidationCut time: " + str(round(endTime-startTime,3)) + " seconds."
 		startTime = time.time()
-		print "FullValidationCut Accurracy:", cf.clasificationJudge(X[:,rank[0:cutpos3]],y), " #features:", cutpos3 
+		print "FullValidationCut Accurracy:", ml.clasificationJudge(X=X[:,rank[0:cutpos3]], y=y, testPerc=0.5, runs=3), " #features:", cutpos3 
 		endTime = time.time()
 		print "Classification FullValidationCut time: " + str(round(endTime-startTime,3)) + " seconds."
 		#'''
@@ -118,7 +125,7 @@ def artificialTest():
 		endTime = time.time()
 		print "Time finding redundant: " + str(round(endTime-startTime,3)) + " seconds."
 		#'''
-		'''
+		#'''
 		startTime = time.time()
 		rank = list(originalRank)
 		rank =  set(p.parallelRemoveRedundant(X,rank))		
@@ -127,7 +134,9 @@ def artificialTest():
 		print "Not redundant:",rank
 		print "Redundant:", set(originalRank).difference(set(rank))
 		endTime = time.time()
+		rank = list(rank)
 		print "Time finding redundant: " + str(round(endTime-startTime,3)) + " seconds."
+		print "Final not redundant features Accurracy:", ml.clasificationJudge(X=X[:,rank], y=y, testPerc=0.5, runs=3)
 		#'''
 		
 		i = i+1

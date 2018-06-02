@@ -1,4 +1,4 @@
-import classifiers as cf
+import model as ml
 import featureSelection as fs
 from pandas import read_csv, np
 import time
@@ -21,7 +21,7 @@ def artificialTest():
 		y = np.array(data.ix[:,-1])
 		print filepath, buenos[i]
 		startTime = time.time()
-		acc = cf.clasificationJudge(X,y)
+		acc = ml.clasificationJudge(X,y)
 		endTime = time.time()
 		print "original:", acc, X.shape[1], str(round(endTime-startTime,3))+"s"
 		for minRed in range(0,2):
@@ -30,12 +30,12 @@ def artificialTest():
 					for corrOption in range(0,6):
 						try:
 							startTime = time.time()
-							rank = fs.featureSelection(X=X,y=y, processes=0, corrOption=corrOption, binMethod=binMethod, cutMethod=cutMethod, minRed=minRed, debug=False)							
+							rank = fs.featureSelection(X=X,y=y, problemType=0, runs=3, processes=0, corrOption=corrOption, binMethod=binMethod, cutMethod=cutMethod, minRed=minRed, debug=False)							
 							endTime = time.time()
 							timefs = round(endTime-startTime,3)
 							X = np.array(data.ix[:,rank])
 							startTime = time.time()
-							acc = cf.clasificationJudge(X,y)
+							acc = ml.clasificationJudge(X,y)
 							endTime = time.time()
 							timecf = round(endTime-startTime,3)
 							print minRed,binMethod, cutMethod, corrOption, acc, timefs, timecf, len(rank), rank[0:5]			

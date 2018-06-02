@@ -1,4 +1,4 @@
-import classifiers as cf
+import model as ml
 
 def greatestDiff(weights):
 	maxdiff=0
@@ -10,12 +10,16 @@ def greatestDiff(weights):
 			cutpos = i+1
 	return cutpos
 
-def monotonicValidationCut(X,y,rank,consecutives=5):
+def monotonicValidationCut(X,y,rank,modelType=0,consecutives=5,runs=3):
 	lastScore = 0
 	cutpos = 0
 	counter = 0
 	for i in range(1,len(rank)):
-		score = cf.clasificationJudge(X[:,rank[0:i]],y)
+		if(modelType==0):
+			score = ml.clasificationJudge(X=X[:,rank[0:i]], y=y, testPerc=0.5, runs=runs)
+		else:
+			score = ml.regresionJudge(X=X[:,rank[0:i]], y=y, testPerc=0.5, runs=runs)
+
 		if(lastScore >= score):
 			counter = counter + 1
 			if(counter>=consecutives):
@@ -27,14 +31,4 @@ def monotonicValidationCut(X,y,rank,consecutives=5):
 			cutpos = i
 	if(cutpos<=0):
 		cutpos=1
-	return cutpos
-
-def fullValidationCut(X,y,rank):
-	maxScore = 0
-	cutpos = 0
-	for i in range(1,len(rank)):
-		score = cf.clasificationJudge(X[:,rank[0:i]],y)
-		if(score > maxScore):
-			maxScore = score
-			cutpos = i
 	return cutpos
