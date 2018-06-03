@@ -67,7 +67,7 @@ def mrmrTest(cutMethod=1, method=0, runs=3):
 		startTime = time.time()
 		[rank,featureImportance] = rankExtraction(filepath2,method)
 		if(cutMethod==0):
-			cutpos = cuts.greatestDiff(weights=featureImportance)
+			cutpos = cuts.greatestDiffCut(weights=featureImportance)
 		elif(cutMethod==1):
 			cutpos = cuts.monotonicValidationCut(X=X, y=y, modelType=modelType, rank=rank, consecutives=5, runs=runs)
 		

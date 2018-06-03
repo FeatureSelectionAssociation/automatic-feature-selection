@@ -81,14 +81,14 @@ def artificialTest():
 		print "Full classification time: " + str(round(endTime-startTime,3)) + " seconds."
 		
 		startTime = time.time()
-		cutpos1 = cuts.greatestDiff(weights)
+		cutpos1 = cuts.greatestDiffCut(weights)
 		print rank[0:cutpos1]
 		endTime = time.time()
-		print "\nCut GreatestDiff time: " + str(round(endTime-startTime,3)) + " seconds."
+		print "\nCut greatestDiffCut time: " + str(round(endTime-startTime,3)) + " seconds."
 		startTime = time.time()
-		print "GreatestDiff Accurracy:", ml.clasificationJudge(X=X[:,rank[0:cutpos1]], y=y, testPerc=0.5, runs=3), " #features:", cutpos1 		
+		print "greatestDiffCut Accurracy:", ml.clasificationJudge(X=X[:,rank[0:cutpos1]], y=y, testPerc=0.5, runs=3), " #features:", cutpos1 		
 		endTime = time.time()
-		print "Classification GreatestDiff time: " + str(round(endTime-startTime,3)) + " seconds."
+		print "Classification greatestDiffCut time: " + str(round(endTime-startTime,3)) + " seconds."
 		
 		#'''
 		startTime = time.time()

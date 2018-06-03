@@ -30,7 +30,7 @@ def artificialTest():
 					for corrOption in range(0,6):
 						try:
 							startTime = time.time()
-							rank = fs.featureSelection(X=X,y=y, problemType=0, runs=3, processes=0, corrOption=corrOption, binMethod=binMethod, cutMethod=cutMethod, minRed=minRed, debug=False)							
+							rank = fs.featureSelection(X=X,y=y, modelType=0, runs=3, processes=0, corrOption=corrOption, binMethod=binMethod, cutMethod=cutMethod, minRed=minRed, debug=False)							
 							endTime = time.time()
 							timefs = round(endTime-startTime,3)
 							X = np.array(data.ix[:,rank])

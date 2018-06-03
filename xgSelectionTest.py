@@ -48,7 +48,7 @@ def xgTest(cutMethod=1, runs=3):
 			[featureImportance, rank] = xgRelevancy(X,y)
 			if(cutMethod==0):
 				featureImportance = featureImportance[0:-1]
-				cutpos = cuts.greatestDiff(weights=featureImportance)
+				cutpos = cuts.greatestDiffCut(weights=featureImportance)
 			if(cutMethod==1):
 				cutpos = cuts.monotonicValidationCut(X=X, y=y, modelType=modelType, rank=rank, consecutives=5, runs=runs)
 			rank = rank[0:cutpos]
