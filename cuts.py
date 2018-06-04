@@ -19,6 +19,7 @@ def monotonicValidationCut(X,y,rank,modelType=0,consecutives=5,runs=3):
 			score = ml.modelJudge(X=X[:,rank[0:i]], y=y, testPerc=0.4, runs=runs)
 		else:
 			score = 1/(ml.modelJudge(X=X[:,rank[0:i]], y=y, testPerc=0.4, runs=runs)+1)
+		#print bestScore, score, cutpos
 		if(bestScore >= score):
 			counter = counter + 1
 			if(counter>=consecutives):

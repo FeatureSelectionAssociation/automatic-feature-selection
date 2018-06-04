@@ -21,7 +21,7 @@ classifiers = [
     ]
 
 namesr = [
-		"LinearRegression",
+		#"LinearRegression",
 		"DecisionTreeRegressor",
 		"RandomForestRegressor"
 		]

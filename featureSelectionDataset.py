@@ -21,7 +21,7 @@ def evaluteDataset(filepath, modelType=2, cutMethod=1, minRed=0, comporative=Tru
 		endTime = time.time()
 		print "original:", acc, X.shape[1], str(round(endTime-startTime,3))+"s"
 	startTime = time.time()
-	rank = fs.featureSelection(X=X,y=y, modelType=0, runs=3, processes=0, corrOption=1, binMethod=0, cutMethod=cutMethod, minRed=minRed, debug=False)							
+	rank = fs.featureSelection(X=X,y=y, modelType=modelType, runs=3, processes=0, corrOption=1, binMethod=0, cutMethod=cutMethod, minRed=minRed, debug=False)							
 	endTime = time.time()
 	timefs = round(endTime-startTime,3)
 	X = np.array(data.ix[:,rank])
@@ -51,7 +51,9 @@ def fcEvaluateDataset(filepath, configuration=1, comporative=True):
 		evaluteDataset(filepath,cutMethod=3,minRed=1,comporative=comporative)
 
 if __name__ == '__main__':
-	path = 'Data/real/sonar_scale.csv'
+	path = 'Data/real/splice_scale.csv'
+	#path = 'Data/regression/reg1000-f1.csv'
+	#path = 'Data/regression/forestfires.csv'	
 	fcEvaluateDataset(path)
 	fcEvaluateDataset(path,configuration=1.5,comporative=False)
 	fcEvaluateDataset(path,configuration=2,comporative=False)
