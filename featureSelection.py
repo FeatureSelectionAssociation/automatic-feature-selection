@@ -2,6 +2,9 @@ import util as ut
 import cuts
 import parallel as p
 
+#modelType = 0 # classification
+#modelType >= 1 # regression
+#modelType >= 2 # explore if it is classification or reression
 #binMethod 0 = Relevancy with total static bin selection
 #binMethod 1 = Relevancy with dynamic bin selection
 #corrOption 0 = umdv
@@ -10,10 +13,12 @@ import parallel as p
 #corrOption 3 = MIC
 #corrOption 4 = vote (umdv + cmdv)
 #corrOption 5 = vote (umdv + cmdv + mic)
-#cutMethod 0 = greatestDiff2
+#cutMethod 0 = greatestDiffCut2
 #cutMethod 1 = monotonicValidationCut
 #cutMethod 2 = fullValidationCut
-def featureSelection(X,y, processes=0, corrOption=4, binMethod=0, cutMethod=1, minRed=0, debug=False):
+#cutMethod 3 = searchValidationCut
+def featureSelection(X,y, modelType=0, runs=3, processes=0, corrOption=4, binMethod=0, cutMethod=1, minRed=0, debug=False):
+	
 	if(corrOption<=3):
 		corrMethod = corrOption
 	elif(corrOption==4):
@@ -36,15 +41,16 @@ def featureSelection(X,y, processes=0, corrOption=4, binMethod=0, cutMethod=1, m
 	rank = ut.getOrderRank(weights)
 	orank = set(rank)
 	if(cutMethod==0):
-		rank = rank[0:cuts.greatestDiff(weights=weights)]
+		rank = rank[0:cuts.greatestDiffCut(weights=weights)]
 	elif(cutMethod==1):
-		rank = rank[0:cuts.monotonicValidationCut(X=X,y=y,rank=rank,consecutives=5)]
+		rank = rank[0:cuts.monotonicValidationCut(X=X, y=y, modelType=modelType, rank=rank, consecutives=5, runs=runs)]
 	elif(cutMethod==2):
-		rank = rank[0:cuts.fullValidationCut(X=X,y=y,rank=rank)]
+		rank = rank[0:cuts.monotonicValidationCut(X=X, y=y, modelType=modelType, rank=rank, consecutives=X.shape[1], runs=runs)]
+	elif(cutMethod==3):
+		[rank,originalRankPositions] = cuts.searchValidationCut(X=X, y=y, modelType=modelType, rank=rank, runs=runs)
 	if(debug):
 		print "cutted",rank
 	if(minRed==1):
-		#rank = removeRedundant(X,rank)
 		rank = p.parallelRemoveRedundant(X=X, rank=rank, processes=processes, threshold=0.95)
 	if(debug):
 		print "mrmr",rank
