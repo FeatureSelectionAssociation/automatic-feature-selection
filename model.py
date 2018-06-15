@@ -21,7 +21,7 @@ classifiers = [
     ]
 
 namesr = [
-		#"LinearRegression",
+		"LinearRegression",
 		"DecisionTreeRegressor",
 		"RandomForestRegressor"
 		]
@@ -31,7 +31,7 @@ regressors = [
 		RandomForestRegressor(max_depth=5, n_estimators=10)
     ]
 
-def modelJudge(X,y,modelType=2,testPerc=0.5, runs=3):
+def modelJudge(X,y,modelType=2,testPerc=0.4, runs=3):
 	global classifiers,regressors,namesc,namesr
 	if(modelType>=2 or modelType<0):
 		modelType = ut.datesetType(y)

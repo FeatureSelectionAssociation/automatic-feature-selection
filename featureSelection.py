@@ -7,16 +7,17 @@ import parallel as p
 #modelType >= 2 # explore if it is classification or reression
 #binMethod 0 = Relevancy with total static bin selection
 #binMethod 1 = Relevancy with dynamic bin selection
-#corrOption 0 = umdv
-#corrOption 1 = cmdv
+#corrOption 0 = ud
+#corrOption 1 = cd
 #corrOption 2 = (umd+cmd)/2
 #corrOption 3 = MIC
-#corrOption 4 = vote (umdv + cmdv)
-#corrOption 5 = vote (umdv + cmdv + mic)
+#corrOption 4 = vote (ud + cd)
+#corrOption 5 = vote (ud + cd + mic)
 #cutMethod 0 = greatestDiffCut2
 #cutMethod 1 = monotonicValidationCut
 #cutMethod 2 = fullValidationCut
 #cutMethod 3 = searchValidationCut
+
 def featureSelection(X,y, modelType=0, runs=3, processes=0, corrOption=4, binMethod=0, cutMethod=1, minRed=0, debug=False):
 	
 	if(corrOption<=3):
