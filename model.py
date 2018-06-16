@@ -5,6 +5,7 @@ from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, RandomF
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 import util as ut
+from numpy import sqrt
 
 namesc = [
 		"NearestNeighbors",
@@ -53,5 +54,5 @@ def modelJudge(X,y,modelType=2,testPerc=0.4, runs=3):
 			for name, reg in zip(namesr, regressors):
 				reg.fit(X_train, y_train)
 				ypred = reg.predict(X_test)
-				error += mean_squared_error(y_test, ypred)
+				error +=  (sqrt(mean_squared_error(y_test, ypred)))/ypred.shape[0]
 		return round(error/(len(regressors)*runs),3)	
