@@ -9,15 +9,15 @@ def artificialTest():
 	modelType = 0 #0 classification, 1 regression
 	dataPath = "data/"
 	dataSets = ut.constructDatasetNames(dataType,modelType,dataPath)
-	dataSets = dataSets[0:]
+	#dataSets = dataSets[1:]
 	i=0
 	verboseClassifiers = True
 	for f in dataSets:
 		maxAcc = 1000000*modelType
 		bestRun = False
 		data = read_csv(f)
-		data = data[0:1000]
-		print data.shape
+		#data = data[0:20000]
+		#print data.shape
 		X = np.array(data.ix[:,0:-1])
 		y = np.array(data.ix[:,-1])
 		#print f, X.shape[0], X.shape[1], len(set(list(y))) #dataset information
@@ -31,10 +31,10 @@ def artificialTest():
 			print "original:", "e: "+str(acc), "#"+str(X.shape[1]), "n:"+str(X.shape[0]), str(round(endTime-startTime,3))+"s"
 		for minRed in [0,1]:#range(0,2):
 			for binMethod in [0]:#range(0,2):
-				for cutMethod in [1,3]:#range(0,4):
-					for corrOption in [1,3]:#range(0,6):
+				for cutMethod in [1]:#range(0,4):
+					for measure in [0,1,2,3]:#range(0,6):
 						startTime = time.time()
-						rank = fs.featureSelection(X=X,y=y, modelType=modelType, runs=3, processes=0, corrOption=corrOption, binMethod=binMethod, cutMethod=cutMethod, minRed=minRed, debug=False)							
+						rank = fs.featureSelection(X=X,y=y, modelType=modelType, runs=3, processes=0, measure=measure, binMethod=binMethod, cutMethod=cutMethod, minRed=minRed, rrThreshold=0.9, debug=False)							
 						endTime = time.time()
 						timefs = round(endTime-startTime,3)
 						X = np.array(data.ix[:,rank])
@@ -43,17 +43,17 @@ def artificialTest():
 						endTime = time.time()
 						timecf = round(endTime-startTime,3)
 						if(modelType==0):		
-							print "[",minRed, binMethod, cutMethod, corrOption, "]", str(acc*100)+"%", str(timefs)+"s", str(timecf)+"s", "#"+str(len(rank)), rank[0:10]			
+							print "[",minRed, binMethod, cutMethod, measure, "]", str(acc*100)+"%", str(timefs)+"s", str(timecf)+"s", "#"+str(len(rank)), rank[0:10]			
 							bestRun = True if acc>maxAcc else False 
 						else:
-							print "[",minRed, binMethod, cutMethod, corrOption, "]", "e: "+str(acc), str(timefs)+"s", str(timecf)+"s", "#"+str(len(rank)), rank[0:10]
+							print "[",minRed, binMethod, cutMethod, measure, "]", "e: "+str(acc), str(timefs)+"s", str(timecf)+"s", "#"+str(len(rank)), rank[0:10]
 							bestRun = True if acc<maxAcc else False 
 						if(bestRun):							
 							maxAcc = acc
 							maxRank = rank
 							maxTimefs = timefs
 							maxTimecf = timecf
-							configuration = [minRed,binMethod,cutMethod,corrOption]
+							configuration = [minRed,binMethod,cutMethod,measure]
 							bestRun = False
 						X = np.array(data.ix[:,0:-1])
 		if(modelType==0):

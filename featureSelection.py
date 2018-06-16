@@ -7,37 +7,37 @@ import parallel as p
 #modelType >= 2 # explore if it is classification or reression
 #binMethod 0 = Relevancy with total static bin selection
 #binMethod 1 = Relevancy with dynamic bin selection
-#corrOption 0 = ud
-#corrOption 1 = cd
-#corrOption 2 = (umd+cmd)/2
-#corrOption 3 = MIC
-#corrOption 4 = vote (ud + cd)
-#corrOption 5 = vote (ud + cd + mic)
+#measure 0 = ud
+#measure 1 = cd
+#measure 2 = (umd+cmd)/2
+#measure 3 = MIC
+#measure 4 = vote (ud + cd)
+#measure 5 = vote (ud + cd + mic)
 #cutMethod 0 = greatestDiffCut2
 #cutMethod 1 = monotonicValidationCut
 #cutMethod 2 = fullValidationCut
 #cutMethod 3 = searchValidationCut
 
-def featureSelection(X,y, modelType=0, runs=3, processes=0, corrOption=4, binMethod=0, cutMethod=1, minRed=0, debug=False):
+def featureSelection(X,y, modelType=0, runs=3, processes=0, measure=4, binMethod=0, cutMethod=1, minRed=0, rrThreshold=0.9, debug=False):
 	
-	if(corrOption<=3):
-		corrMethod = corrOption
-	elif(corrOption==4):
-		corrOption = [0,1]
-	elif(corrOption==5):
-		corrOption = [0,1,3]
+	if(measure<=3):
+		corrMethod = measure
+	elif(measure==4):
+		measure = [0,1]
+	elif(measure==5):
+		measure = [0,1,3]
 	wlist = []
-	if(corrOption<=3):
+	if(measure<=3):
 		if(binMethod==0):
-			weights = p.binStatic(X=X,y=y,processes=processes,method=corrMethod)
+			weights = p.binStatic(X=X,y=y,processes=processes,measure=corrMethod)
 		elif(binMethod==1):
-			weights = p.binarySearchBins(X=X, y=y, processes=processes, method=corrMethod, split=0, useSteps=2, normalizeResult=False, debug=False)			
+			weights = p.binarySearchBins(X=X, y=y, processes=processes, measure=corrMethod, split=0, useSteps=2, normalizeResult=False, debug=False)			
 	else:
-		for corrMethod in corrOption: 	
+		for corrMethod in measure: 	
 			if(binMethod==0):
-				wlist.append(p.binStatic(X=X,y=y,processes=processes,method=corrMethod))
+				wlist.append(p.binStatic(X=X,y=y,processes=processes,measure=corrMethod))
 			elif(binMethod==1):
-				wlist.append(p.binarySearchBins(X=X, y=y, processes=processes, method=corrMethod, split=0, useSteps=2, normalizeResult=False, debug=False))
+				wlist.append(p.binarySearchBins(X=X, y=y, processes=processes, measure=corrMethod, split=0, useSteps=2, normalizeResult=False, debug=False))
 		weights = (ut.sumMixedCorrelation(wlist))
 	rank = ut.getOrderRank(weights)
 	orank = set(rank)
@@ -52,7 +52,7 @@ def featureSelection(X,y, modelType=0, runs=3, processes=0, corrOption=4, binMet
 	if(debug):
 		print "cutted",rank
 	if(minRed==1):
-		rank = p.parallelRemoveRedundant(X=X, rank=rank, processes=processes, threshold=0.95)
+		rank = p.parallelRemoveRedundant(X=X, rank=rank, processes=processes, measure=2, threshold=rrThreshold)
 	if(debug):
 		print "mrmr",rank
 	return rank

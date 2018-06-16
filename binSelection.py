@@ -3,20 +3,20 @@ import util as ut
 import numpy as np
 
 #################################### STATIC (FORMULA) BIN SELECTION ####################################
-def binStatic(X, y, method=2):
+def binStatic(X, y, measure=2):
 	yBinSet = computeBinSetStatic(y)
 	result = []
 	binSize = []
 	for i in range(0,X.shape[1]):
 		xi = X[:,i]
-		xiBinSet = computeBinSetStatic(xi)		
-		value =  computeValue(xi,y,xiBinSet, yBinSet, method)	
+		xiBinSet = computeBinSetStatic(xi)
+		value =  computeValue(xi,y,xiBinSet, yBinSet, measure)	
 		result.append(value[0])
 		binSize.append(value[1])
 	#print result
 	return result
 
-def computeValue(xi, y, xiBinSet, yBinSet, method):
+def computeValue(xi, y, xiBinSet, yBinSet, measure):
 	binValueResult = []
 	binSetResult = []
 	binValue = 0
@@ -24,13 +24,13 @@ def computeValue(xi, y, xiBinSet, yBinSet, method):
 	binResult = []
 	for numbinx in xiBinSet:
 		for numbiny in yBinSet:
-			if(method==0):
+			if(measure==0):
 				binValue = round(cm.umdv(xi,y,int(numbinx),int(numbiny)),2)
-			elif(method==1):
+			elif(measure==1):
 				binValue = round(cm.cmdv(xi,y,int(numbinx),int(numbiny)),2)
-			elif(method==2):
+			elif(measure==2):
 				binValue = round(cm.ucmd(xi,y,int(numbinx),int(numbiny)),2)
-			elif(method==3):
+			elif(measure==3):
 				binValue = round(cm.MIC(xi,y),2)
 			if(binValue>maxValue):
 				maxValue=binValue
@@ -61,7 +61,7 @@ def computeBinSetStatic(f):
 
 #################################### DYNAMIC (Search) BIN SELECTION ####################################
 
-def binarySearchBins(X, y, method=0, split=0, useSteps=0, normalizeResult=False, debug=False):
+def binarySearchBins(X, y, measure=0, split=0, useSteps=0, normalizeResult=False, debug=False):
 	xbinsetList = []
 	xValueList = []
 	rangeY = float(len(set(y)))
@@ -109,11 +109,11 @@ def binarySearchBins(X, y, method=0, split=0, useSteps=0, normalizeResult=False,
 				print "currentBins: ", currentBins
 			dependencyValues = []
 			for numbinx in currentBins: #Compute dependency with each bin proposed
-				if(method==0):
+				if(measure==0):
 					dependencyValues.append(round(cm.umdv(xi,y,int(numbinx),int(numbiny)),2))
-				elif(method==1):
+				elif(measure==1):
 					dependencyValues.append(round(cm.cmdv(xi,y,int(numbinx),int(numbiny)),2))
-				elif(method==2):
+				elif(measure==2):
 					dependencyValues.append(round(cm.ucmd(xi,y,int(numbinx),int(numbiny)),2))
 				if(numbinx in explored):
 					repeated = True
@@ -167,7 +167,7 @@ def binarySearchBins(X, y, method=0, split=0, useSteps=0, normalizeResult=False,
 	return xValueList
 
 
-def cuadratureSearchBins(X, method=1, split=3, xjlist=False, consecutiveDepth=3, maxDepth=7, computeRepeated=False, Debug=False):
+def cuadratureSearchBins(X, measure=1, split=3, xjlist=False, consecutiveDepth=3, maxDepth=7, computeRepeated=False, Debug=False):
 	xbinsetList = {}
 	xValueList = {}
 	
@@ -211,7 +211,7 @@ def cuadratureSearchBins(X, method=1, split=3, xjlist=False, consecutiveDepth=3,
 						dependencyValues = []
 						for xiNumBin in xiCurrentBins: #Compute dependency with each bin proposed
 							for xjNumBin in xjCurrentBins:
-								if(method==1):
+								if(measure==1):
 									dependencyValues.append(round(cm.umd(xi,xj,int(xiNumBin),int(xjNumBin)),2))
 								else:
 									dependencyValues.append(round(cm.cmd(xi,xj,int(xiNumBin),int(xjNumBin)),2))
@@ -281,7 +281,7 @@ def cuadratureSearchBins(X, method=1, split=3, xjlist=False, consecutiveDepth=3,
 	return xbinsetList
 
 
-def optimalRelevancyBins(X,y,method=1):
+def optimalRelevancyBins(X,y,measure=1):
 	xbinsetList = []
 	xValueList = []
 	numbiny = float(len(set(y)))
@@ -293,7 +293,7 @@ def optimalRelevancyBins(X,y,method=1):
 		domainx = int(len(set(x)))
 		domainx = int(pow(domainx,1.0))
 		for numbinx in range(1,domainx):
-			if(method==1):
+			if(measure==1):
 				currentValue = cm.umd(x,y,int(numbinx),int(numbiny))
 			else:
 				currentValue = cm.cmd(x,y,int(numbinx),int(numbiny))
@@ -307,7 +307,7 @@ def optimalRelevancyBins(X,y,method=1):
 	print xValueList
 
 #################################### REDUNDANT ELIMINITATION ####################################
-def removeRedundant(X, rank, threshold=0.95):
+def removeRedundant(X, rank, measure=2, threshold=0.9):
 	it = 0
 	for i in rank:
 		if (len(rank)>1):
@@ -315,19 +315,19 @@ def removeRedundant(X, rank, threshold=0.95):
 			rankj = rank[it:]
 			for j in rankj:
 				value = binfeatures(X[:,i],X[:,j])
-				if(value>=threshold):
+				if(value>=threshold):				
 					rank.remove(j)
 	return rank
 
-def binfeatures(xi, xj, method=2):
+def binfeatures(xi, xj, measure=2):
 	result = []
 	binSize = []
 	xiBin = computeBinSetStatic(xi)		
 	xjBin = computeBinSetStatic(xj)
-	value = computeValueRed(xi, xj, xiBin, xjBin, method)[0]
+	value = computeValueRed(xi, xj, xiBin, xjBin, measure)[0]
 	return value
 
-def computeValueRed(xi, y, xiBinSet, yBinSet, method):
+def computeValueRed(xi, y, xiBinSet, yBinSet, measure):
 	binValueResult = []
 	binSetResult = []
 	binValue = 0
@@ -335,10 +335,16 @@ def computeValueRed(xi, y, xiBinSet, yBinSet, method):
 	binResult = []
 	for numbinx in xiBinSet:
 		for numbiny in yBinSet:
-			if(method==2):
+			if(measure==0):
+				binValue = round(cm.umd(xi,y,int(numbinx),int(numbiny)),2)
+			if(measure==1):
+				binValue = round(cm.cmd(xi,y,int(numbinx),int(numbiny)),2)
+			if(measure==2):
 				binValue = round(cm.ucmd(xi,y,int(numbinx),int(numbiny)),2)
-			elif(method==3):
+			elif(measure==3):
 				binValue = round(cm.MIC(xi,y),2)
+			else:
+				binValue = round(cm.ucmd(xi,y,int(numbinx),int(numbiny)),2)
 			if(binValue>maxValue):
 				maxValue=binValue
 				binResult = [numbinx,numbiny]

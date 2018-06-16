@@ -134,25 +134,12 @@ def normalizeScales(ll):
 
 def constructDatasetNames(dataType=0,modelType=0, dataPath="Data/"): #dataType=0 sintentico, dataType=1 real, type=0 clasification, type=1 regression
 	datasetNames = []
+	numberOfDatasets = [[4,1],[27,3]] #[[sintetico][real]] [classification,regression]
+	prefixOfDatasets = [['sc','sr'],['rc','rr']]
 	path = dataPath
 	path += "regression/" if modelType else "classification/" 
 	path += "real/" if dataType else "synthetic/" 
-	if(dataType==0 and modelType==0):
-		for n in range(1,5):
-			for size in [20000]:
-				name = path+"f"+str(n)+"-"+str(size)+".csv"
-				datasetNames.append(name)
-	if(dataType==0 and modelType==1):
-		for n in range(1,2):
-			for size in [20000]:
-				name = path+"r"+str(n)+"-"+str(size)+".csv"
-				datasetNames.append(name)
-	if(dataType==1 and modelType==0):
-		for n in range(1,28):
-			name = path+str(n)+"c.csv"
-			datasetNames.append(name)
-	if(dataType==1 and modelType==1):
-		for n in range(1,4):
-			name = path+str(n)+"r.csv"
+	for n in range(1,numberOfDatasets[dataType][modelType]+1):
+			name = path+prefixOfDatasets[dataType][modelType]+str(n)+".csv"
 			datasetNames.append(name)
 	return datasetNames

@@ -42,7 +42,7 @@ def splitInformationRows(info,nsplits):
 
 #################################### RELEVANCE IDENTIFICATION ####################################
 
-def binStatic(X, y, processes=0, method=2):
+def binStatic(X, y, processes=0, measure=2):
 	cores = multiprocessing.cpu_count()
 	nfeat = X.shape[1]
 	pareval = int(nfeat*pow(len(list(set(y))),0.7)*pow(cores,0.5)*len(y)*2)
@@ -55,18 +55,18 @@ def binStatic(X, y, processes=0, method=2):
 			jobs=processes
 		pool = multiprocessing.Pool(processes=jobs)
 		info = splitInformation(X,jobs)
-		pbs=partial(bs.binStatic, y=y, method=method)
+		pbs=partial(bs.binStatic, y=y, measure=measure)
 		presults = pool.map(pbs, info)
 		results = [item for sublist in presults for item in sublist]
 		pool.close()
 		pool.join()
 		return results
 	else:
-		return bs.binStatic(X,y,method=method)
+		return bs.binStatic(X,y,measure=measure)
 	
 
-def binarySearchBins(X, y, processes=0, method=0, split=0, useSteps=0, normalizeResult=False, debug=False):
-	if(method==3):
+def binarySearchBins(X, y, processes=0, measure=0, split=0, useSteps=0, normalizeResult=False, debug=False):
+	if(measure==3):
 		return binStatic(X,y,0,3)
 	cores = multiprocessing.cpu_count()
 	nfeat = X.shape[1]
@@ -80,17 +80,17 @@ def binarySearchBins(X, y, processes=0, method=0, split=0, useSteps=0, normalize
 			jobs=processes
 		pool = multiprocessing.Pool(processes=jobs)
 		info = splitInformation(X,jobs)
-		pbs=partial(bs.binarySearchBins, y=y, method=method, split=split, useSteps=useSteps, normalizeResult=normalizeResult, debug=debug)
+		pbs=partial(bs.binarySearchBins, y=y, measure=measure, split=split, useSteps=useSteps, normalizeResult=normalizeResult, debug=debug)
 		presults = pool.map(pbs, info)
 		results = [item for sublist in presults for item in sublist]
 		pool.close()
 		pool.join()
 		return results
 	else:
-		return bs.binarySearchBins(X, y=y, method=method, split=split, useSteps=useSteps, normalizeResult=normalizeResult, debug=debug)
+		return bs.binarySearchBins(X, y=y, measure=measure, split=split, useSteps=useSteps, normalizeResult=normalizeResult, debug=debug)
 
 #################################### REDUNDANT ELIMINITATION ####################################
-def parallelRemoveRedundant(X, rank, processes=0, threshold=0.95):
+def parallelRemoveRedundant(X, rank, processes=0, measure=2, threshold=0.9):
 	cores = multiprocessing.cpu_count()
 	samples = X.shape[0]
 	if(processes==0):
@@ -101,7 +101,7 @@ def parallelRemoveRedundant(X, rank, processes=0, threshold=0.95):
 		jobs=processes	
 	pool = multiprocessing.Pool(processes=jobs)
 	info = splitInformationRows(X,jobs)
-	pbs=partial(bs.removeRedundant, rank=rank, threshold=threshold)
+	pbs=partial(bs.removeRedundant, rank=rank, measure=2, threshold=threshold)
 	results = pool.map(pbs, info)
 	removeSet = set(rank) - set(results[0])
 	for r in results[1:]:
