@@ -16,11 +16,9 @@ def artificialTest():
 		maxAcc = 1000000*modelType
 		bestRun = False
 		data = read_csv(f)
-		#data = data[0:20000]
-		#print data.shape
+		data = data[0:1000]
 		X = np.array(data.ix[:,0:-1])
 		y = np.array(data.ix[:,-1])
-		#print f, X.shape[0], X.shape[1], len(set(list(y))) #dataset information
 		print f
 		startTime = time.time()
 		acc = ml.modelJudge(X=X, y=y, modelType=modelType, testPerc=0.4, runs=3)
@@ -29,10 +27,10 @@ def artificialTest():
 			print "original:", str(acc*100)+"%", "#"+str(X.shape[1]), "n:"+str(X.shape[0]), str(round(endTime-startTime,3))+"s"
 		else:
 			print "original:", "e: "+str(acc), "#"+str(X.shape[1]), "n:"+str(X.shape[0]), str(round(endTime-startTime,3))+"s"
-		for minRed in [0,1]:#range(0,2):
+		for minRed in [0]:#range(0,2):
 			for binMethod in [0]:#range(0,2):
-				for cutMethod in [1]:#range(0,4):
-					for measure in [0,1,2,3]:#range(0,6):
+				for cutMethod in [3]:#range(0,4):
+					for measure in [0,1,3,4]:#range(0,6):
 						startTime = time.time()
 						rank = fs.featureSelection(X=X,y=y, modelType=modelType, runs=3, processes=0, measure=measure, binMethod=binMethod, cutMethod=cutMethod, minRed=minRed, rrThreshold=0.9, debug=False)							
 						endTime = time.time()

@@ -101,7 +101,7 @@ def parallelRemoveRedundant(X, rank, processes=0, measure=2, threshold=0.9):
 		jobs=processes	
 	pool = multiprocessing.Pool(processes=jobs)
 	info = splitInformationRows(X,jobs)
-	pbs=partial(bs.removeRedundant, rank=rank, measure=2, threshold=threshold)
+	pbs=partial(bs.removeRedundant, rank=rank, measure=measure, threshold=threshold)
 	results = pool.map(pbs, info)
 	removeSet = set(rank) - set(results[0])
 	for r in results[1:]:

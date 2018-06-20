@@ -25,13 +25,15 @@ def computeValue(xi, y, xiBinSet, yBinSet, measure):
 	for numbinx in xiBinSet:
 		for numbiny in yBinSet:
 			if(measure==0):
-				binValue = round(cm.umdv(xi,y,int(numbinx),int(numbiny)),2)
+				binValue = round(cm.udv(xi,y,int(numbinx),int(numbiny)),2)
 			elif(measure==1):
-				binValue = round(cm.cmdv(xi,y,int(numbinx),int(numbiny)),2)
+				binValue = round(cm.cdv(xi,y,int(numbinx),int(numbiny)),2)
 			elif(measure==2):
 				binValue = round(cm.ucmd(xi,y,int(numbinx),int(numbiny)),2)
 			elif(measure==3):
 				binValue = round(cm.MIC(xi,y),2)
+			elif(measure==4):
+				binValue = round(cm.MI(xi,y,int(numbinx),int(numbiny)),2)
 			if(binValue>maxValue):
 				maxValue=binValue
 				binResult = [numbinx,numbiny]
@@ -110,11 +112,13 @@ def binarySearchBins(X, y, measure=0, split=0, useSteps=0, normalizeResult=False
 			dependencyValues = []
 			for numbinx in currentBins: #Compute dependency with each bin proposed
 				if(measure==0):
-					dependencyValues.append(round(cm.umdv(xi,y,int(numbinx),int(numbiny)),2))
+					dependencyValues.append(round(cm.udv(xi,y,int(numbinx),int(numbiny)),2))
 				elif(measure==1):
-					dependencyValues.append(round(cm.cmdv(xi,y,int(numbinx),int(numbiny)),2))
+					dependencyValues.append(round(cm.cdv(xi,y,int(numbinx),int(numbiny)),2))
 				elif(measure==2):
 					dependencyValues.append(round(cm.ucmd(xi,y,int(numbinx),int(numbiny)),2))
+				elif(measure==4):
+					binValue = dependencyValues.append(round(cm.MI(xi,y,int(numbinx),int(numbiny)),2))
 				if(numbinx in explored):
 					repeated = True
 				else:
@@ -314,7 +318,7 @@ def removeRedundant(X, rank, measure=2, threshold=0.9):
 			it = it+1
 			rankj = rank[it:]
 			for j in rankj:
-				value = binfeatures(X[:,i],X[:,j])
+				value = binfeatures(X[:,i],X[:,j],measure=measure)
 				if(value>=threshold):				
 					rank.remove(j)
 	return rank
@@ -328,6 +332,8 @@ def binfeatures(xi, xj, measure=2):
 	return value
 
 def computeValueRed(xi, y, xiBinSet, yBinSet, measure):
+	if(measure>4):
+		measure=2
 	binValueResult = []
 	binSetResult = []
 	binValue = 0
@@ -336,13 +342,15 @@ def computeValueRed(xi, y, xiBinSet, yBinSet, measure):
 	for numbinx in xiBinSet:
 		for numbiny in yBinSet:
 			if(measure==0):
-				binValue = round(cm.umd(xi,y,int(numbinx),int(numbiny)),2)
+				binValue = round(cm.udmax(xi,y,int(numbinx),int(numbiny)),2)
 			if(measure==1):
-				binValue = round(cm.cmd(xi,y,int(numbinx),int(numbiny)),2)
+				binValue = round(cm.cdmax(xi,y,int(numbinx),int(numbiny)),2)
 			if(measure==2):
 				binValue = round(cm.ucmd(xi,y,int(numbinx),int(numbiny)),2)
 			elif(measure==3):
 				binValue = round(cm.MIC(xi,y),2)
+			elif(measure==4):
+				binValue = round(cm.MI(xi,y,int(numbinx),int(numbiny)),2)
 			else:
 				binValue = round(cm.ucmd(xi,y,int(numbinx),int(numbiny)),2)
 			if(binValue>maxValue):
