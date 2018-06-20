@@ -52,7 +52,7 @@ def featureSelection(X,y, modelType=0, runs=3, processes=0, measure=4, binMethod
 	elif(cutMethod==2):
 		rank = rank[0:cuts.monotonicValidationCut(X=X, y=y, modelType=modelType, rank=rank, consecutives=X.shape[1], runs=runs)]
 	elif(cutMethod==3):
-		[rank,originalRankPositions] = cuts.searchValidationCut(X=X, y=y, modelType=modelType, rank=rank, runs=runs)
+		[rank,originalRankPositions] = cuts.searchValidationCut(X=X, y=y, modelType=modelType, rank=rank, consecutives=5, runs=runs)
 	if(debug):
 		print "cutted",rank
 	if(minRed==1):

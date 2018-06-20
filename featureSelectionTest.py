@@ -5,18 +5,18 @@ from pandas import read_csv, np
 import time
 
 def artificialTest():
-	dataType = 0 #0 syntetic, 1 real
+	dataType = 1 #0 syntetic, 1 real
 	modelType = 0 #0 classification, 1 regression
 	dataPath = "data/"
 	dataSets = ut.constructDatasetNames(dataType,modelType,dataPath)
-	#dataSets = dataSets[1:]
+	#dataSets = dataSets[3:]
 	i=0
 	verboseClassifiers = True
 	for f in dataSets:
 		maxAcc = 1000000*modelType
 		bestRun = False
 		data = read_csv(f)
-		data = data[0:1000]
+		#data = data[0:2000]
 		X = np.array(data.ix[:,0:-1])
 		y = np.array(data.ix[:,-1])
 		print f
@@ -30,7 +30,7 @@ def artificialTest():
 		for minRed in [0]:#range(0,2):
 			for binMethod in [0]:#range(0,2):
 				for cutMethod in [3]:#range(0,4):
-					for measure in [0,1,3,4]:#range(0,6):
+					for measure in [0,1,2,3,4]:#range(0,6):
 						startTime = time.time()
 						rank = fs.featureSelection(X=X,y=y, modelType=modelType, runs=3, processes=0, measure=measure, binMethod=binMethod, cutMethod=cutMethod, minRed=minRed, rrThreshold=0.9, debug=False)							
 						endTime = time.time()
