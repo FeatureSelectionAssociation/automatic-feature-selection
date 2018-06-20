@@ -128,14 +128,14 @@ def feature1(numberOfRecords,verbose=0):#time cos mod logic
 	target = []
 	passcos = []
 	passmod = []
-	coslimit = 0.5
+	coslimit = 0.2
 	features.append(time) #0 time
 	features.append(lcos(numberOfRecords,7,1))#1 time*cos(7*pi/180)	
-	features.append(randomUR(numberOfRecords,0,40,1)) #2 0to40  /10%2===1
-	features.append(randomUR(numberOfRecords,0,1.2,1)) #3 x
-	features.append(randomUR(numberOfRecords,0,1.2,1)) #4 y
-	features.append(randomUR(numberOfRecords,0,1.2,1)) #5 z
-	features.append(randomUR(numberOfRecords,int(round(numberOfRecords/4)),numberOfRecords+int(round(numberOfRecords/4)),1)) #6 val
+	features.append(randomUR(numberOfRecords,10,40,1)) #2  /10%2===1
+	features.append(randomUR(numberOfRecords,0.4,1.2,1)) #3
+	features.append(randomUR(numberOfRecords,0.4,1.2,1)) #4
+	features.append(randomUR(numberOfRecords,0,0.6,1)) #5
+	features.append(randomUR(numberOfRecords,int(round(numberOfRecords/4)),numberOfRecords+int(round(numberOfRecords/4)),1)) #6
 	features.append(randomUR(numberOfRecords,0,numberOfRecords*2,1)) #7 noise
 	features.append(randomUR(numberOfRecords,0,numberOfRecords/2,1)) #8 noise
 	features.append(randomGR(numberOfRecords,0,numberOfRecords,10)) #9 noise
@@ -145,32 +145,24 @@ def feature1(numberOfRecords,verbose=0):#time cos mod logic
 	#feature extraction
 	features.append(lsuml(lsuml(features[3],lmult(features[4],2)),lmult(features[5],4)))#13 x*1 y*2 z*4 (logic)
 	for x in features[1]:
-		if(x>=coslimit):
+		if(x>coslimit):
 			passcos.append(1)
 		else:
 			passcos.append(0)
 	for x in features[2]:
-		passmod.append(x%4)
-		
-	features.append(lmultl(features[6],passcos))#14 if(cos>coslimit) and if(0to40%2) * (val)
-	features.append(passmod)
-	features.append(lsuml(features[3],features[4]))#16 x+y
-	features.append(lsuml(features[4],features[5]))#17 y+z
-	features.append(lsuml(features[3],features[5]))#18 x+z
-	features.append(lsuml(lmult(features[1],10), features[2]))#19 10*cos+0to40
+		if((x/10)%2):
+			passmod.append(1)
+		else:
+			passmod.append(0)
+	features.append( lmultl(lmultl(lresl(features[6],features[0]),passcos),passmod) )#14 if(cos>coslimit) and if(var2/10%2) * (var6-var0)
 	for i in range(0,numberOfRecords):
-		result = 0
-		if(features[3][i] and features[4][i] and not features[5][i]): #x y z
-			result += 1
-		if(features[2][i]%2): #0to40
-			result += 2
-		if(features[1][i]>=coslimit and features[6][i]>numberOfRecords/2): #cos and val
-			result += 4
-		target.append(result)
+		if(features[6][i]>features[0][i] and features[1][i]>coslimit and ((features[2][i]/10))%2 and features[3][i] and features[4][i] and not(features[5][i]) ):
+			target.append(1)
+		else:
+			target.append(0)
 	if(verbose):
 		print sum(target)
 	return [features,target]
-
 def feature2(numberOfRecords,verbose=0):#timcos -timesin >5
 	time = range(0,numberOfRecords)
 	cos = lcos(numberOfRecords,17,0)
@@ -179,7 +171,6 @@ def feature2(numberOfRecords,verbose=0):#timcos -timesin >5
 	noiseG = randomGR(numberOfRecords,-4,4,0)
 	noiseU = roundList(noiseU,2)
 	noiseG = roundList(noiseG,2)
-	
 	features = []
 	target = []
 	features.append(lsuml(time,lmult(cos,5))) #0 time+cos
@@ -187,27 +178,22 @@ def feature2(numberOfRecords,verbose=0):#timcos -timesin >5
 	features.append(randomUR(numberOfRecords,0,numberOfRecords*2,1)) #2 noise
 	features.append(randomUR(numberOfRecords,0,numberOfRecords/2,1)) #3 noise
 	features.append(randomUR(numberOfRecords,0,numberOfRecords,1)) #4 noise
-	features.append(randomUR(numberOfRecords,0,numberOfRecords*4,1)) #5 noise
-	features.append(randomUR(numberOfRecords,0,numberOfRecords/4,1)) #6 noise
+	features.append(randomUR(numberOfRecords,0,numberOfRecords*3,1)) #5 noise
+	features.append(randomUR(numberOfRecords,0,numberOfRecords/3,1)) #6 noise
 	features.append(randomUR(numberOfRecords,0,numberOfRecords,1)) #7 noise
 	f0rf1 = roundList(lresl(features[0],features[1],1))
 	#feature extraction
-	features.append(lsuml(f0rf1,features[6]))#8 (var8+noiseU)
-	features.append(f0rf1)#9 
-	features.append(lmultl(lmultl(features[0],features[0]),lmultl(features[1],features[1])))#10 (var8+noiseU)
-	
+	features.append(lsuml(f0rf1,noiseU ))#8 (var8+noiseU)
+	features.append(lsuml(f0rf1,noiseG ))#9 (var8+noiseU)
 	#features.append(f0rf1)#10 abs(var0 - var1) 
 	for i in range(0,numberOfRecords):
-		result = 0
 		if(abs(features[0][i] - features[1][i]) > 5  ):
-			result += 1
-		if((features[0][i] - features[1][i]) >= 0  ):
-			result += 2		
-		target.append(result)
+			target.append(1)
+		else:
+			target.append(0)
 	if(verbose):
 		print sum(target)
 	return [features,target]
-
 def feature3(numberOfRecords,verbose=0):#inside circle and A>B
 	features = []
 	target = []
@@ -255,10 +241,10 @@ def feature4(numberOfRecords,verbose=0):#targetNoiseCorrelation
 	return [features,target]
 #'''
 f1,t1 = feature1(20000,1)
-l1 = ['time','cos','0to40','x','y','z','val','noise1','noise2','noise3','noise4','timex10','time+noise','logic','restrictions','0to40%4','x+y','x+z','y+z','0to40+cos*10','target']
+l1 = ['time','cos','0to40','x','y','z','val','noise1','noise2','noise3','noise4','timex10','time+noise','logic','restrictions','target']
 writeCSV("f1.csv",f1,t1,l1)
 f2,t2 = feature2(20000,1)
-l2 = ['v1','v2','n1','n2','n3','n4','n5','n6','v1-v2+f[6]','v1-v2','v1^2-v2^2','target']
+l2 = ['v1','v2','n1','n2','n3','n4','n5','n6','v1-v2+noiseU','v1-v2+noiseG','v1-v2','target']
 writeCSV("f2.csv",f2,t2,l2)
 f3,t3 = feature3(20000,1)
 l3 = ['var0','var1','noise1','noise1*10','noise2','noise3','var0>var1+noise1','insidecircle','target']

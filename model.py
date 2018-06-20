@@ -5,6 +5,7 @@ from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, RandomF
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 import util as ut
+from numpy import sqrt
 
 namesc = [
 		"NearestNeighbors",
@@ -21,7 +22,7 @@ classifiers = [
     ]
 
 namesr = [
-		#"LinearRegression",
+		"LinearRegression",
 		"DecisionTreeRegressor",
 		"RandomForestRegressor"
 		]
@@ -31,7 +32,7 @@ regressors = [
 		RandomForestRegressor(max_depth=5, n_estimators=10)
     ]
 
-def modelJudge(X,y,modelType=2,testPerc=0.5, runs=3):
+def modelJudge(X,y,modelType=2,testPerc=0.4, runs=3):
 	global classifiers,regressors,namesc,namesr
 	if(modelType>=2 or modelType<0):
 		modelType = ut.datesetType(y)
@@ -53,5 +54,5 @@ def modelJudge(X,y,modelType=2,testPerc=0.5, runs=3):
 			for name, reg in zip(namesr, regressors):
 				reg.fit(X_train, y_train)
 				ypred = reg.predict(X_test)
-				error += mean_squared_error(y_test, ypred)
+				error +=  (sqrt(mean_squared_error(y_test, ypred)))/ypred.shape[0]
 		return round(error/(len(regressors)*runs),3)	

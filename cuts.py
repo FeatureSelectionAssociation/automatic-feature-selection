@@ -33,10 +33,11 @@ def monotonicValidationCut(X,y,rank,modelType=0,consecutives=5,runs=3):
 		cutpos=1
 	return cutpos
 
-def searchValidationCut(X,y,rank,modelType=0,runs=3):
+def searchValidationCut(X,y,rank,modelType=0,consecutives=7,runs=3):
 	bestScore = 0
 	rankPositions = []
 	featuresAccepted = []
+	counter = 0
 	for i in range(0,len(rank)):
 		rankPositions.append(i)
 		featuresAccepted.append(rank[i])
@@ -47,6 +48,10 @@ def searchValidationCut(X,y,rank,modelType=0,runs=3):
 		if(bestScore >= score):
 			rankPositions.remove(i)
 			featuresAccepted.remove(rank[i])
+			counter = counter + 1
+			if(counter>=consecutives):
+				break
 		else:
 			bestScore = score
+			counter = 0
 	return [featuresAccepted, rankPositions]

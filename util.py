@@ -131,3 +131,15 @@ def normalizeScales(ll):
 		for j in range(len(ll[i])):
 			ll[i][j] = round(ll[i][j]*w[i],2)
 	return ll
+
+def constructDatasetNames(dataType=0,modelType=0, dataPath="Data/"): #dataType=0 sintentico, dataType=1 real, type=0 clasification, type=1 regression
+	datasetNames = []
+	numberOfDatasets = [[4,1],[27,3]] #[[sintetico][real]] [classification,regression]
+	prefixOfDatasets = [['sc','sr'],['rc','rr']]
+	path = dataPath
+	path += "regression/" if modelType else "classification/" 
+	path += "real/" if dataType else "synthetic/" 
+	for n in range(1,numberOfDatasets[dataType][modelType]+1):
+			name = path+prefixOfDatasets[dataType][modelType]+str(n)+".csv"
+			datasetNames.append(name)
+	return datasetNames
