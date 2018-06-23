@@ -20,14 +20,14 @@ import parallel as p
 #cutMethod 2 = fullValidationCut
 #cutMethod 3 = searchValidationCut
 
-def featureSelection(X,y, modelType=0, runs=3, processes=0, measure=4, binMethod=0, cutMethod=1, minRed=0, rrThreshold=0.9, debug=False):
+def featureSelection(X,y, modelType=0, runs=3, processes=0, measure=1, binMethod=0, cutMethod=1, minRed=0, rrThreshold=0.9, debug=False):
 	
 	if(measure<=4):
 		corrMethod = measure
 	elif(measure==5):
 		measure = [0,1]
 	elif(measure==6):
-		measure = [0,1,2,3]
+		measure = [1,3,4]
 	wlist = []
 	if(measure<=4):
 		if(binMethod==0):
@@ -41,6 +41,7 @@ def featureSelection(X,y, modelType=0, runs=3, processes=0, measure=4, binMethod
 			elif(binMethod==1):
 				wlist.append(p.binarySearchBins(X=X, y=y, processes=processes, measure=corrMethod, split=0, useSteps=2, normalizeResult=False, debug=False))
 		weights = (ut.sumMixedCorrelation(wlist))
+	#print weights
 	rank = ut.getOrderRank(weights)
 	orank = set(rank)
 	if(cutMethod==-1):
@@ -50,7 +51,8 @@ def featureSelection(X,y, modelType=0, runs=3, processes=0, measure=4, binMethod
 	elif(cutMethod==1):
 		rank = rank[0:cuts.monotonicValidationCut(X=X, y=y, modelType=modelType, rank=rank, consecutives=5, runs=runs)]
 	elif(cutMethod==2):
-		rank = rank[0:cuts.monotonicValidationCut(X=X, y=y, modelType=modelType, rank=rank, consecutives=X.shape[1], runs=runs)]
+		#rank = rank[0:cuts.monotonicValidationCut(X=X, y=y, modelType=modelType, rank=rank, consecutives=X.shape[1], runs=runs)]
+		[rank,originalRankPositions] = cuts.searchValidationCut(X=X, y=y, modelType=modelType, rank=rank, consecutives=X.shape[1], runs=runs)
 	elif(cutMethod==3):
 		[rank,originalRankPositions] = cuts.searchValidationCut(X=X, y=y, modelType=modelType, rank=rank, consecutives=5, runs=runs)
 	if(debug):
@@ -59,4 +61,8 @@ def featureSelection(X,y, modelType=0, runs=3, processes=0, measure=4, binMethod
 		rank = p.parallelRemoveRedundant(X=X, rank=rank, processes=processes, measure=measure, threshold=rrThreshold)
 	if(debug):
 		print "mrmr",rank
+	#print "weights:",
+	#for i in rank:
+	#	print weights[i],
+	#print
 	return rank

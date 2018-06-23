@@ -8,16 +8,16 @@ import util as ut
 from numpy import sqrt
 
 namesc = [
-		"NearestNeighbors",
+		#"NearestNeighbors",
 		"DecisionTree",
 		"RandomForest",
 		"AdaBoost"
 		]
 
 classifiers = [
-		KNeighborsClassifier(10),
-		DecisionTreeClassifier(max_depth=5),
-		RandomForestClassifier(max_depth=5, n_estimators=10),
+		#KNeighborsClassifier(10),
+		DecisionTreeClassifier(max_depth=7),
+		RandomForestClassifier(max_depth=7, n_estimators=15),
 		AdaBoostClassifier()
     ]
 
@@ -28,8 +28,8 @@ namesr = [
 		]
 regressors = [
 		LinearRegression(),
-		DecisionTreeRegressor(max_depth=5),
-		RandomForestRegressor(max_depth=5, n_estimators=10)
+		DecisionTreeRegressor(max_depth=7),
+		RandomForestRegressor(max_depth=7, n_estimators=15)
     ]
 
 def modelJudge(X,y,modelType=2,testPerc=0.4, runs=3):

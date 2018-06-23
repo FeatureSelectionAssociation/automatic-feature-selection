@@ -6,10 +6,11 @@ import time
 
 def artificialTest():
 	dataType = 1 #0 syntetic, 1 real
-	modelType = 0 #0 classification, 1 regression
+	modelType = 1 #0 classification, 1 regression
 	dataPath = "data/"
 	dataSets = ut.constructDatasetNames(dataType,modelType,dataPath)
-	#dataSets = dataSets[3:]
+	#dataSets = dataSets[22:24]
+	#print dataSets
 	i=0
 	verboseClassifiers = True
 	for f in dataSets:
@@ -27,7 +28,7 @@ def artificialTest():
 			print "original:", str(acc*100)+"%", "#"+str(X.shape[1]), "n:"+str(X.shape[0]), str(round(endTime-startTime,3))+"s"
 		else:
 			print "original:", "e: "+str(acc), "#"+str(X.shape[1]), "n:"+str(X.shape[0]), str(round(endTime-startTime,3))+"s"
-		for minRed in [0]:#range(0,2):
+		for minRed in [0,1]:#range(0,2):
 			for binMethod in [0]:#range(0,2):
 				for cutMethod in [3]:#range(0,4):
 					for measure in [0,1,2,3,4]:#range(0,6):
