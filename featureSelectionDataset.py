@@ -9,7 +9,7 @@ import util as ut
 #minRed: remove redundant features (it could drastically raise the computation time)
 #The result exposed in case of classification is accurracy, in case of regression is mean square error
 
-def evaluteDataset(filepath, modelType=2, cutMethod=1, minRed=0, comporative=True): 
+def evaluteDataset(filepath, modelType=2, measure=1, cutMethod=1, minRed=0, comporative=True): 
 	data = read_csv(filepath)
 	X = np.array(data.ix[:,0:-1])
 	y = np.array(data.ix[:,-1])
@@ -21,7 +21,7 @@ def evaluteDataset(filepath, modelType=2, cutMethod=1, minRed=0, comporative=Tru
 		endTime = time.time()
 		print "original:", acc, X.shape[1], str(round(endTime-startTime,3))+"s"
 	startTime = time.time()
-	rank = fs.featureSelection(X=X,y=y, modelType=modelType, runs=3, processes=0, corrOption=1, binMethod=0, cutMethod=cutMethod, minRed=minRed, debug=False)							
+	rank = fs.featureSelection(X=X,y=y, modelType=modelType, runs=3, processes=0, measure=measure, binMethod=0, cutMethod=cutMethod, minRed=minRed, rrThreshold=0.9, debug=False)							
 	endTime = time.time()
 	timefs = round(endTime-startTime,3)
 	X = np.array(data.ix[:,rank])
@@ -32,29 +32,33 @@ def evaluteDataset(filepath, modelType=2, cutMethod=1, minRed=0, comporative=Tru
 	print "result:",acc, str(timefs)+"s", str(timecf)+"s", len(rank), rank
 
 #configuration=0   : The Fastest but could be inaccurrate
-#configuration=1   : Fast and quite acurrate, without remove redundant feature (default)
-#configuration=1.5 : like configuration 1 but this remove redundant features (remove redundant could be slow)
-#configuration=2   : Accurrate could be slow (not recommended for dataset with a lot of features) without remove redundant
-#configuration=2.5 : like configuration 2 but this remove redundant features (In most case the most accurrate and the slowest)
+#configuration=1-4 : Fast and quite acurrate, without remove redundant feature (default)
+#configuration=1.5 - 4.5 : Adding remove redudant (could be slow)
 #comparative : when set True, shows the original dataset evaluated with our ml judges
 
-def fcEvaluateDataset(filepath, configuration=1, comporative=True):
+def fcEvaluateDataset(filepath, configuration=3, modelType=0, comporative=True):
 	if(configuration==0):
-		evaluteDataset(filepath,cutMethod=0,minRed=0,comporative=comporative)
+		evaluteDataset(filepath,modelType=modelType,measure=1,cutMethod=0,minRed=0,comporative=comporative)
 	elif(configuration==1):
-		evaluteDataset(filepath,cutMethod=1,minRed=0,comporative=comporative)
+		evaluteDataset(filepath,modelType=modelType,measure=1,cutMethod=3,minRed=0,comporative=comporative)
 	elif(configuration==1.5):
-		evaluteDataset(filepath,cutMethod=1,minRed=1,comporative=comporative)
+		evaluteDataset(filepath,modelType=modelType,measure=1,cutMethod=3,minRed=1,comporative=comporative)
 	elif(configuration==2):
-		evaluteDataset(filepath,cutMethod=3,minRed=0,comporative=comporative)
+		evaluteDataset(filepath,modelType=modelType,measure=3,cutMethod=3,minRed=0,comporative=comporative)
 	elif(configuration==2.5):
-		evaluteDataset(filepath,cutMethod=3,minRed=1,comporative=comporative)
-
+		evaluteDataset(filepath,modelType=modelType,measure=3,cutMethod=3,minRed=1,comporative=comporative)
+	elif(configuration==3):
+		evaluteDataset(filepath,modelType=modelType,measure=4,cutMethod=3,minRed=0,comporative=comporative)
+	elif(configuration==3.5):
+		evaluteDataset(filepath,modelType=modelType,measure=4,cutMethod=3,minRed=1,comporative=comporative)
+	elif(configuration==4):
+		evaluteDataset(filepath,modelType=modelType,measure=6,cutMethod=3,minRed=0,comporative=comporative)
+	elif(configuration==4.5):
+		evaluteDataset(filepath,modelType=modelType,measure=6,cutMethod=3,minRed=1,comporative=comporative)
 if __name__ == '__main__':
-	path = 'Data/real/splice_scale.csv'
-	#path = 'Data/regression/reg1000-f1.csv'
-	#path = 'Data/regression/forestfires.csv'	
-	fcEvaluateDataset(path)
-	fcEvaluateDataset(path,configuration=1.5,comporative=False)
+	path = 'data/classification/real/rc23.csv'
+	fcEvaluateDataset(path,configuration=1)
 	fcEvaluateDataset(path,configuration=2,comporative=False)
-	fcEvaluateDataset(path,configuration=2.5,comporative=False)
+	fcEvaluateDataset(path,configuration=3,comporative=False)
+	fcEvaluateDataset(path,configuration=4,comporative=False)
+	
